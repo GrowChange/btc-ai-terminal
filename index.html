@@ -7,24 +7,9 @@
 <title>BTC AI Terminal</title>
 
 <style>
+:root{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#dce7f7;background:#05070b;--panel:#090d14;--panel2:#0c121b;--border:#192534;--muted:#68798f;--cyan:#4dc7ff;--green:#21d6a3;--red:#ff526f;--amber:#f4b84a}
 
-:root{
-  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  color:#dce7f7;
-  background:#05070b;
-  --panel:#090d14;
-  --panel2:#0c121b;
-  --border:#192534;
-  --muted:#68798f;
-  --cyan:#4dc7ff;
-  --green:#21d6a3;
-  --red:#ff526f;
-  --amber:#f4b84a
-}
-
-*{
-  box-sizing:border-box
-}
+*{box-sizing:border-box}
 
 body{
   margin:0;
@@ -131,17 +116,9 @@ body:before{
   border-color:rgba(33,214,163,.28)
 }
 
-.warn{
-  color:var(--amber)
-}
-
-.dead{
-  color:var(--red)
-}
-
-.paper{
-  color:#9bc8ff
-}
+.warn{color:var(--amber)}
+.dead{color:var(--red)}
+.paper{color:#9bc8ff}
 
 .wrap{
   max-width:1800px;
@@ -223,17 +200,9 @@ body:before{
   margin-top:4px
 }
 
-.pos{
-  color:var(--green)!important
-}
-
-.neg{
-  color:var(--red)!important
-}
-
-.amber{
-  color:var(--amber)!important
-}
+.pos{color:var(--green)!important}
+.neg{color:var(--red)!important}
+.amber{color:var(--amber)!important}
 
 .toolbar{
   height:40px;
@@ -516,6 +485,68 @@ body:before{
   margin-top:8px
 }
 
+.pnlWrap{
+  padding:14px
+}
+
+.pnlTop{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:flex-end;
+  margin-bottom:10px
+}
+
+.pnlValue{
+  font-size:22px;
+  font-weight:900
+}
+
+.pnlMeta{
+  font-size:8px;
+  color:#5e7085;
+  line-height:1.4;
+  text-align:right
+}
+
+.pnlSvg{
+  width:100%;
+  height:170px;
+  display:block;
+  background:#080c12;
+  border:1px solid var(--border);
+  border-radius:7px
+}
+
+.pnlLegend{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:7px;
+  font-size:7px;
+  color:#5f7186
+}
+
+.zeroLine{
+  stroke:#344150;
+  stroke-width:1;
+  stroke-dasharray:4 4
+}
+
+.pnlLine{
+  fill:none;
+  stroke-width:2.25;
+  vector-effect:non-scaling-stroke
+}
+
+.pnlArea{
+  opacity:.08
+}
+
+.masterBias.long{color:var(--green)}
+.masterBias.short{color:var(--red)}
+.masterBias.neutral{color:var(--amber)}
+
 @media(max-width:1100px){
 
   .wrap{
@@ -577,7 +608,6 @@ body:before{
   }
 
 }
-
 </style>
 </head>
 
@@ -599,7 +629,7 @@ body:before{
 
       <div class="title">
         BTC AI Terminal
-        <small>v0.3 • DUAL-HORIZON</small>
+        <small>v0.4 • MASTERMIND RESEARCH</small>
       </div>
 
     </div>
@@ -667,29 +697,12 @@ body:before{
 
   <div class="toolbar">
 
-    <button data-tf="1m" class="on">
-      1m
-    </button>
-
-    <button data-tf="5m">
-      5m
-    </button>
-
-    <button data-tf="15m">
-      15m
-    </button>
-
-    <button data-tf="1h">
-      1h
-    </button>
-
-    <button data-tf="6h">
-      6h
-    </button>
-
-    <button data-tf="1d">
-      1d
-    </button>
+    <button data-tf="1m" class="on">1m</button>
+    <button data-tf="5m">5m</button>
+    <button data-tf="15m">15m</button>
+    <button data-tf="1h">1h</button>
+    <button data-tf="6h">6h</button>
+    <button data-tf="1d">1d</button>
 
     <span
       id="chartState"
@@ -918,143 +931,185 @@ body:before{
 <section class="panel full">
 
   <div class="head">
+    OVERALL RESEARCH P&L HISTORY
+    <span>PRACTICE + 1S SHADOW + FORWARD PAPER</span>
+  </div>
 
-    1-SECOND MICROSTRUCTURE MATRIX
+  <div class="pnlWrap">
 
-    <span id="microHeartbeat">
-      —
-    </span>
+    <div class="pnlTop">
 
+      <div>
+
+        <div class="mlabel">
+          CUMULATIVE RESEARCH P&L
+        </div>
+
+        <div id="overallResearchPnl" class="pnlValue">
+          —
+        </div>
+
+      </div>
+
+      <div id="pnlMeta" class="pnlMeta">
+        Building evidence curve…
+      </div>
+
+    </div>
+
+    <svg
+      id="pnlSvg"
+      class="pnlSvg"
+      viewBox="0 0 1000 170"
+      preserveAspectRatio="none"
+    >
+
+      <line
+        id="pnlZero"
+        class="zeroLine"
+        x1="0"
+        x2="1000"
+        y1="85"
+        y2="85"
+      ></line>
+
+      <path
+        id="pnlArea"
+        class="pnlArea"
+        d=""
+      ></path>
+
+      <path
+        id="pnlLine"
+        class="pnlLine"
+        d=""
+      ></path>
+
+    </svg>
+
+    <div class="pnlLegend">
+
+      <span id="pnlStart">
+        START —
+      </span>
+
+      <span>
+        This is a research-performance curve, not live account equity.
+      </span>
+
+      <span id="pnlEnd">
+        NOW —
+      </span>
+
+    </div>
+
+  </div>
+
+</section>
+
+<section class="panel full">
+
+  <div class="head">
+    MASTERMIND MICROSTRUCTURE MATRIX
+    <span id="microHeartbeat">—</span>
   </div>
 
   <div class="microgrid">
 
     <div class="box">
-
-      <small>
-        SPREAD
-      </small>
-
-      <b id="spread">
-        —
-      </b>
-
-      <em>
-        bid/ask friction
-      </em>
-
+      <small>SPREAD</small>
+      <b id="spread">—</b>
+      <em>bid/ask friction</em>
     </div>
 
     <div class="box">
-
-      <small>
-        BOOK IMBALANCE
-      </small>
-
-      <b id="imbalance">
-        —
-      </b>
-
-      <em>
-        -1 sell / +1 buy pressure
-      </em>
-
+      <small>BOOK IMBALANCE</small>
+      <b id="imbalance">—</b>
+      <em>-1 sell / +1 buy pressure</em>
     </div>
 
     <div class="box">
-
-      <small>
-        MICROPRICE EDGE
-      </small>
-
-      <b id="microEdge">
-        —
-      </b>
-
-      <em>
-        weighted fair-price displacement
-      </em>
-
+      <small>MICROPRICE EDGE</small>
+      <b id="microEdge">—</b>
+      <em>weighted fair-price displacement</em>
     </div>
 
     <div class="box">
-
-      <small>
-        1S VELOCITY
-      </small>
-
-      <b id="v1">
-        —
-      </b>
-
-      <em>
-        price movement in bps
-      </em>
-
+      <small>1S VELOCITY</small>
+      <b id="v1">—</b>
+      <em>price movement in bps</em>
     </div>
 
     <div class="box">
-
-      <small>
-        5S VELOCITY
-      </small>
-
-      <b id="v5">
-        —
-      </b>
-
-      <em>
-        short burst direction
-      </em>
-
+      <small>5S VELOCITY</small>
+      <b id="v5">—</b>
+      <em>short burst direction</em>
     </div>
 
     <div class="box">
-
-      <small>
-        15S VELOCITY
-      </small>
-
-      <b id="v15">
-        —
-      </b>
-
-      <em>
-        micro trend persistence
-      </em>
-
+      <small>15S VELOCITY</small>
+      <b id="v15">—</b>
+      <em>micro trend persistence</em>
     </div>
 
     <div class="box">
-
-      <small>
-        ANOMALY SCORE
-      </small>
-
-      <b id="microAnom">
-        —
-      </b>
-
-      <em>
-        velocity + spread + book pressure
-      </em>
-
+      <small>ANOMALY SCORE</small>
+      <b id="microAnom">—</b>
+      <em>statistical dislocation score</em>
     </div>
 
     <div class="box">
+      <small>DEEP BOOK IMBALANCE</small>
+      <b id="deepImbalance">—</b>
+      <em>weighted top-20 depth</em>
+    </div>
 
-      <small>
-        SECOND SAMPLES
-      </small>
+    <div class="box">
+      <small>TAKER FLOW</small>
+      <b id="takerFlow">—</b>
+      <em>recent aggressor buy/sell pressure</em>
+    </div>
 
-      <b id="secondSamples">
-        —
-      </b>
+    <div class="box">
+      <small>VWAP EDGE</small>
+      <b id="tradeVwapEdge">—</b>
+      <em>trade-flow fair-value displacement</em>
+    </div>
 
-      <em>
-        successful micro scans
-      </em>
+    <div class="box">
+      <small>ACCELERATION</small>
+      <b id="acceleration">—</b>
+      <em>change in 1s velocity</em>
+    </div>
 
+    <div class="box">
+      <small>LIQUIDITY SCORE</small>
+      <b id="liquidityScore">—</b>
+      <em>depth, spread and flow quality</em>
+    </div>
+
+    <div class="box">
+      <small>CONFLUENCE</small>
+      <b id="confluenceScore">—</b>
+      <em>multi-factor directional agreement</em>
+    </div>
+
+    <div class="box">
+      <small>MASTERMIND BIAS</small>
+      <b id="mastermindBias" class="masterBias">—</b>
+      <em id="mastermindConfidence">confidence —</em>
+    </div>
+
+    <div class="box">
+      <small>SPOOF DIVERGENCE</small>
+      <b id="spoofDivergence">—</b>
+      <em>top-book vs deep-book disagreement</em>
+    </div>
+
+    <div class="box">
+      <small>SECOND SAMPLES</small>
+      <b id="secondSamples">—</b>
+      <em>successful micro scans</em>
     </div>
 
   </div>
@@ -1066,13 +1121,8 @@ body:before{
   <section class="panel">
 
     <div class="head">
-
       RECENT 1S SIGNALS
-
-      <span>
-        SHADOW / COST-ADJUSTED
-      </span>
-
+      <span>SHADOW / COST-ADJUSTED</span>
     </div>
 
     <div id="microSignals" class="body">
@@ -1088,13 +1138,8 @@ body:before{
   <section class="panel">
 
     <div class="head">
-
       FORWARD PAPER TRADES
-
-      <span>
-        NO LIVE CAPITAL
-      </span>
-
+      <span>NO LIVE CAPITAL</span>
     </div>
 
     <div id="paperTrades" class="body">
@@ -1114,13 +1159,8 @@ body:before{
   <section class="panel">
 
     <div class="head">
-
       PRACTICE STRATEGY PERFORMANCE
-
-      <span>
-        HISTORICAL
-      </span>
-
+      <span>HISTORICAL</span>
     </div>
 
     <div class="body">
@@ -1128,8 +1168,8 @@ body:before{
       <div id="practiceTable"></div>
 
       <div class="note">
-        Practice P&L is normalized from R using the configured
-        paper risk amount. It does not change forward equity.
+        Practice P&L is normalized from R using the configured paper risk amount.
+        It does not change forward equity.
       </div>
 
     </div>
@@ -1139,13 +1179,8 @@ body:before{
   <section class="panel">
 
     <div class="head">
-
       1S STRATEGY PERFORMANCE
-
-      <span>
-        FORWARD SHADOW
-      </span>
-
+      <span>FORWARD SHADOW</span>
     </div>
 
     <div class="body">
@@ -1153,8 +1188,8 @@ body:before{
       <div id="microTable"></div>
 
       <div class="note">
-        Second-level strategies remain shadow-only until they
-        build enough evidence after fees and slippage.
+        Second-level strategies remain shadow-only until they build enough
+        evidence after fees and slippage.
       </div>
 
     </div>
@@ -1168,13 +1203,8 @@ body:before{
   <section class="panel">
 
     <div class="head">
-
       LEARNING JOURNAL
-
-      <span>
-        AUDITABLE
-      </span>
-
+      <span>AUDITABLE</span>
     </div>
 
     <div id="learning" class="body">
@@ -1190,13 +1220,8 @@ body:before{
   <section class="panel">
 
     <div class="head">
-
       LATEST CORE DECISIONS
-
-      <span>
-        1-MINUTE ENGINE
-      </span>
-
+      <span>1-MINUTE ENGINE</span>
     </div>
 
     <div id="coreDecisions" class="body">
@@ -1216,7 +1241,6 @@ body:before{
 <script src="https://unpkg.com/lightweight-charts@5.2.1/dist/lightweight-charts.standalone.production.js"></script>
 
 <script>
-
 (() => {
 
   'use strict';
@@ -1228,14 +1252,12 @@ body:before{
     'wss://ws-feed.exchange.coinbase.com';
 
   const G = {
-
     '1m':60,
     '5m':300,
     '15m':900,
     '1h':3600,
     '6h':21600,
     '1d':86400
-
   };
 
   let tf =
@@ -1264,9 +1286,7 @@ body:before{
               currency:'USD',
               maximumFractionDigits:2
             }
-          ).format(
-            Number(v)
-          )
+          ).format(Number(v))
         :
           '—';
 
@@ -1356,11 +1376,9 @@ body:before{
     if(
       !r.ok
     ){
-
       throw Error(
         r.status
       );
-
     }
 
     return r.json();
@@ -1383,13 +1401,8 @@ body:before{
       ]);
 
     ticker = {
-
-      price:
-        +t.price,
-
-      open:
-        +s.open
-
+      price:+t.price,
+      open:+s.open
     };
 
     renderTicker();
@@ -1464,14 +1477,11 @@ body:before{
           layout:{
 
             background:{
-              type:
-                L.ColorType.Solid,
-              color:
-                '#090d14'
+              type:L.ColorType.Solid,
+              color:'#090d14'
             },
 
-            textColor:
-              '#78899f'
+            textColor:'#78899f'
 
           },
 
@@ -1497,8 +1507,7 @@ body:before{
           },
 
           crosshair:{
-            mode:
-              L.CrosshairMode.Normal
+            mode:L.CrosshairMode.Normal
           }
 
         }
@@ -1508,35 +1517,20 @@ body:before{
       chart.addSeries(
         L.CandlestickSeries,
         {
-
-          upColor:
-            '#21d6a3',
-
-          downColor:
-            '#ff526f',
-
-          borderUpColor:
-            '#21d6a3',
-
-          borderDownColor:
-            '#ff526f',
-
-          wickUpColor:
-            '#21d6a3',
-
-          wickDownColor:
-            '#ff526f'
-
+          upColor:'#21d6a3',
+          downColor:'#ff526f',
+          borderUpColor:'#21d6a3',
+          borderDownColor:'#ff526f',
+          wickUpColor:'#21d6a3',
+          wickDownColor:'#ff526f'
         }
       );
 
     new ResizeObserver(
       () =>
         chart.applyOptions({
-          width:
-            $('chart').clientWidth,
-          height:
-            $('chart').clientHeight
+          width:$('chart').clientWidth,
+          height:$('chart').clientHeight
         })
     ).observe(
       $('chart')
@@ -1581,25 +1575,19 @@ body:before{
           );
 
         if(
-          d.type !==
-            'ticker' ||
+          d.type !== 'ticker' ||
           !d.price
         ){
           return;
         }
 
         ticker = {
-
-          price:
-            +d.price,
-
-          open:
-            d.open_24h
-              ?
-                +d.open_24h
-              :
-                ticker?.open
-
+          price:+d.price,
+          open:d.open_24h
+            ?
+              +d.open_24h
+            :
+              ticker?.open
         };
 
         renderTicker();
@@ -1611,33 +1599,21 @@ body:before{
 
           const c =
             candles[
-              candles.length -
-              1
+              candles.length - 1
             ];
 
           series.update({
-
-            time:
-              c.time,
-
-            open:
-              c.open,
-
-            high:
-              Math.max(
-                c.high,
-                +d.price
-              ),
-
-            low:
-              Math.min(
-                c.low,
-                +d.price
-              ),
-
-            close:
+            time:c.time,
+            open:c.open,
+            high:Math.max(
+              c.high,
               +d.price
-
+            ),
+            low:Math.min(
+              c.low,
+              +d.price
+            ),
+            close:+d.price
           });
 
         }
@@ -1714,11 +1690,9 @@ body:before{
   socket();
 
 })();
-
 </script>
 
 <script>
-
 (() => {
 
   'use strict';
@@ -1803,26 +1777,26 @@ body:before{
       String(
         s ?? '—'
       )
-      .replace(
-        /[&<>"']/g,
-        c => ({
-          '&':'&amp;',
-          '<':'&lt;',
-          '>':'&gt;',
-          '"':'&quot;',
-          "'":'&#39;'
-        }[c])
-      );
+        .replace(
+          /[&<>"']/g,
+          c => ({
+            '&':'&amp;',
+            '<':'&lt;',
+            '>':'&gt;',
+            '"':'&quot;',
+            "'":'&#39;'
+          }[c])
+        );
 
   const words =
     s =>
       String(
         s ?? '—'
       )
-      .replaceAll(
-        '_',
-        ' '
-      );
+        .replaceAll(
+          '_',
+          ' '
+        );
 
   const when =
     s =>
@@ -1831,16 +1805,16 @@ body:before{
           new Date(
             s
           )
-          .toLocaleString(
-            [],
-            {
-              month:'short',
-              day:'numeric',
-              hour:'numeric',
-              minute:'2-digit',
-              second:'2-digit'
-            }
-          )
+            .toLocaleString(
+              [],
+              {
+                month:'short',
+                day:'numeric',
+                hour:'numeric',
+                minute:'2-digit',
+                second:'2-digit'
+              }
+            )
         :
           '—';
 
@@ -1886,8 +1860,7 @@ body:before{
       );
 
     if(
-      n(v) >
-      0
+      n(v) > 0
     ){
 
       $(id)
@@ -1899,8 +1872,7 @@ body:before{
     }
 
     if(
-      n(v) <
-      0
+      n(v) < 0
     ){
 
       $(id)
@@ -1920,11 +1892,8 @@ body:before{
 
     return `
       <table class="table">
-
         <thead>
-
           <tr>
-
             ${
               headers
                 .map(
@@ -1933,21 +1902,263 @@ body:before{
                 )
                 .join('')
             }
-
           </tr>
-
         </thead>
-
         <tbody>
-
-          ${
-            rows.join('')
-          }
-
+          ${rows.join('')}
         </tbody>
-
       </table>
     `;
+
+  }
+
+  function renderPnlCurve(
+    points,
+    current
+  ){
+
+    const svg =
+      $('pnlSvg');
+
+    const line =
+      $('pnlLine');
+
+    const area =
+      $('pnlArea');
+
+    const zero =
+      $('pnlZero');
+
+    if(
+      !svg ||
+      !line ||
+      !area ||
+      !zero
+    ){
+      return;
+    }
+
+    const pts =
+      (
+        points ||
+        []
+      ).filter(
+        x =>
+          Number.isFinite(
+            n(
+              x.value
+            )
+          )
+      );
+
+    $('overallResearchPnl').textContent =
+      money(
+        current
+      );
+
+    color(
+      'overallResearchPnl',
+      current
+    );
+
+    if(
+      !pts.length
+    ){
+
+      line.setAttribute(
+        'd',
+        ''
+      );
+
+      area.setAttribute(
+        'd',
+        ''
+      );
+
+      $('pnlMeta').textContent =
+        'No P&L events yet.';
+
+      return;
+
+    }
+
+    const vals =
+      pts.map(
+        x =>
+          n(
+            x.value
+          )
+      );
+
+    let min =
+      Math.min(
+        0,
+        ...vals
+      );
+
+    let max =
+      Math.max(
+        0,
+        ...vals
+      );
+
+    if(
+      max - min < 1
+    ){
+
+      max += 1;
+      min -= 1;
+
+    }
+
+    const W =
+      1000;
+
+    const H =
+      170;
+
+    const pad =
+      10;
+
+    const x =
+      i =>
+        pts.length === 1
+          ?
+            W / 2
+          :
+            pad +
+            i *
+            (
+              W -
+              2 *
+              pad
+            ) /
+            (
+              pts.length -
+              1
+            );
+
+    const y =
+      v =>
+        pad +
+        (
+          max -
+          v
+        ) *
+        (
+          H -
+          2 *
+          pad
+        ) /
+        (
+          max -
+          min
+        );
+
+    const d =
+      pts
+        .map(
+          (
+            p,
+            i
+          ) =>
+            (
+              i
+                ?
+                  'L'
+                :
+                  'M'
+            ) +
+            x(i).toFixed(1) +
+            ' ' +
+            y(
+              n(
+                p.value
+              )
+            ).toFixed(1)
+        )
+        .join(
+          ' '
+        );
+
+    line.setAttribute(
+      'd',
+      d
+    );
+
+    const lastX =
+      x(
+        pts.length -
+        1
+      );
+
+    const firstX =
+      x(
+        0
+      );
+
+    area.setAttribute(
+      'd',
+      d +
+      ` L ${lastX.toFixed(1)} ${y(0).toFixed(1)} L ${firstX.toFixed(1)} ${y(0).toFixed(1)} Z`
+    );
+
+    const z =
+      y(
+        0
+      );
+
+    zero.setAttribute(
+      'y1',
+      z
+    );
+
+    zero.setAttribute(
+      'y2',
+      z
+    );
+
+    const neg =
+      n(
+        current
+      ) <
+      0;
+
+    line.setAttribute(
+      'stroke',
+      neg
+        ?
+          '#ff526f'
+        :
+          '#21d6a3'
+    );
+
+    area.setAttribute(
+      'fill',
+      neg
+        ?
+          '#ff526f'
+        :
+          '#21d6a3'
+    );
+
+    $('pnlMeta').textContent =
+      `Low ${money(min)} • High ${money(max)} • ${pts.length} evidence points`;
+
+    $('pnlStart').textContent =
+      'START ' +
+      money(
+        vals[0]
+      );
+
+    $('pnlEnd').textContent =
+      'NOW ' +
+      money(
+        vals[
+          vals.length -
+          1
+        ]
+      );
 
   }
 
@@ -1977,9 +2188,9 @@ body:before{
     $('scanTitle').textContent =
       d.micro.online
         ?
-          'Second-level microstructure scanner active'
+          'Bitcoin mastermind research engine active'
         :
-          'Second-level scanner degraded';
+          'Mastermind engine degraded';
 
     $('scanCopy').textContent =
       d.micro.online
@@ -2039,10 +2250,7 @@ body:before{
     );
 
     $('forwardSub').textContent =
-      n(
-        d.account.totalReturnPct
-      ).toFixed(2) +
-      '% since start';
+      `${n(d.account.totalReturnPct).toFixed(2)}% since start`;
 
     $('forwardTrades').textContent =
       fmt(
@@ -2171,6 +2379,73 @@ body:before{
         d.micro.runsCount
       );
 
+    $('deepImbalance').textContent =
+      n(
+        d.micro.latest.deepBookImbalance
+      ).toFixed(3);
+
+    $('takerFlow').textContent =
+      n(
+        d.micro.latest.takerFlowImbalance
+      ).toFixed(3);
+
+    $('tradeVwapEdge').textContent =
+      bps(
+        d.micro.latest.tradeVwapEdgeBps
+      );
+
+    $('acceleration').textContent =
+      bps(
+        d.micro.latest.accelerationBps
+      );
+
+    $('liquidityScore').textContent =
+      n(
+        d.micro.latest.liquidityScore
+      ).toFixed(0) +
+      '/100';
+
+    $('confluenceScore').textContent =
+      n(
+        d.micro.latest.confluenceScore
+      ).toFixed(0) +
+      '/100';
+
+    $('spoofDivergence').textContent =
+      n(
+        d.micro.latest.spoofDivergence
+      ).toFixed(3);
+
+    const mb =
+      String(
+        d.micro.latest.mastermindBias ||
+        'neutral'
+      );
+
+    $('mastermindBias').textContent =
+      mb.toUpperCase();
+
+    $('mastermindBias').className =
+      'masterBias ' +
+      mb;
+
+    $('mastermindConfidence').textContent =
+      'confidence ' +
+      (
+        n(
+          d.micro.latest.mastermindConfidence
+        ) *
+        100
+      ).toFixed(1) +
+      '%';
+
+    renderPnlCurve(
+      d.performance?.pnlCurve ||
+      [],
+      d.performance?.overallResearchPnl ||
+      0
+    );
+
     const ms =
       (
         d.micro.recentSignals ||
@@ -2203,6 +2478,7 @@ body:before{
                   </div>
 
                   <p>
+
                     ${when(s.detected_at)}
                     •
                     confidence
@@ -2240,8 +2516,7 @@ body:before{
           `
             <div class="empty">
               No second-level signals yet.
-              The bot is still collecting
-              second-by-second evidence.
+              The bot is still collecting second-by-second evidence.
             </div>
           `;
 
@@ -2312,8 +2587,7 @@ body:before{
           `
             <div class="empty">
               No forward paper trades yet.
-              Forward P&L is correctly $0 until
-              a setup passes the entry gates.
+              Forward P&L is correctly $0 until a setup passes the entry gates.
             </div>
           `;
 
@@ -2612,7 +2886,6 @@ body:before{
   );
 
 })();
-
 </script>
 
 </body>
