@@ -1,0 +1,1389 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#05070b" />
+  <meta name="description" content="BTC AI paper-trading research terminal" />
+  <title>BTC AI Terminal</title>
+  <link rel="preconnect" href="https://unpkg.com" />
+
+  <style>
+    :root{
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:#dce7f7;
+      background:#05070b;
+      --panel:#090d14;
+      --border:#182230;
+      --muted:#6e7c91;
+      --cyan:#4dc7ff;
+      --green:#20d6a3;
+      --red:#ff506d;
+      --amber:#f5b742
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      min-width:320px;
+      min-height:100vh;
+      background:#05070b
+    }
+
+    button{font:inherit}
+
+    body:before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.3;
+      background-image:
+        linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
+      background-size:36px 36px;
+      mask-image:linear-gradient(to bottom,rgba(0,0,0,.85),transparent 72%)
+    }
+
+    .app-shell{min-height:100vh}
+
+    .topbar{
+      min-height:72px;
+      padding:12px 18px;
+      border-bottom:1px solid var(--border);
+      background:rgba(5,7,11,.92);
+      backdrop-filter:blur(16px);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      position:sticky;
+      top:0;
+      z-index:20
+    }
+
+    .brand-block{display:flex;align-items:center;gap:12px}
+
+    .brand-mark{
+      width:42px;
+      height:42px;
+      border:1px solid #23425a;
+      border-radius:9px;
+      display:grid;
+      place-items:center;
+      color:var(--cyan);
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.08em;
+      background:linear-gradient(135deg,#0c1822,#080b10);
+      box-shadow:inset 0 0 22px rgba(77,199,255,.06),0 0 24px rgba(77,199,255,.04)
+    }
+
+    .eyebrow{
+      color:#5e7691;
+      font-size:10px;
+      letter-spacing:.18em;
+      font-weight:800
+    }
+
+    .brand-title{
+      font-size:16px;
+      font-weight:800;
+      margin-top:3px
+    }
+
+    .brand-title span{
+      font-size:10px;
+      color:#53657b;
+      margin-left:5px
+    }
+
+    .topbar-statuses{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end
+    }
+
+    .status-pill{
+      height:28px;
+      padding:0 9px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      border:1px solid var(--border);
+      border-radius:6px;
+      font-size:9px;
+      letter-spacing:.08em;
+      font-weight:800;
+      color:#8190a4;
+      background:#090d14
+    }
+
+    .status-pill .dot{
+      width:6px;
+      height:6px;
+      border-radius:50%;
+      background:currentColor;
+      box-shadow:0 0 10px currentColor
+    }
+
+    .status-pill.live{
+      color:var(--green);
+      border-color:rgba(32,214,163,.28);
+      background:rgba(32,214,163,.05)
+    }
+
+    .status-pill.connecting{color:var(--amber)}
+    .status-pill.offline{color:var(--red)}
+
+    .status-pill.paper{
+      color:#9dc6ff;
+      border-color:rgba(77,199,255,.22)
+    }
+
+    .status-pill.locked{color:#77859a}
+
+    .terminal-grid{
+      max-width:1800px;
+      margin:0 auto;
+      padding:14px;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 340px;
+      grid-template-areas:
+        "market intel"
+        "metrics metrics"
+        "bottom bottom";
+      gap:12px
+    }
+
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:9px;
+      overflow:hidden;
+      box-shadow:0 12px 40px rgba(0,0,0,.16)
+    }
+
+    .market-panel{grid-area:market;min-width:0}
+    .intel-panel{grid-area:intel}
+
+    .metrics-row{
+      grid-area:metrics;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px
+    }
+
+    .bottom-panel{grid-area:bottom}
+
+    .market-header{
+      min-height:88px;
+      padding:16px 18px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border-bottom:1px solid var(--border)
+    }
+
+    .pair-row{
+      display:flex;
+      align-items:center;
+      gap:11px
+    }
+
+    .btc-coin{
+      width:38px;
+      height:38px;
+      border-radius:50%;
+      background:#f5a623;
+      color:#080808;
+      font-weight:900;
+      display:grid;
+      place-items:center;
+      font-size:21px;
+      box-shadow:0 0 25px rgba(245,166,35,.10)
+    }
+
+    .pair-row h1{
+      margin:0;
+      font-size:18px;
+      letter-spacing:.02em
+    }
+
+    .pair-row span{
+      color:var(--muted);
+      font-size:11px
+    }
+
+    .price-block{text-align:right}
+
+    .live-price{
+      font-size:26px;
+      font-weight:760;
+      letter-spacing:-.02em
+    }
+
+    .change{
+      margin-top:4px;
+      font-size:11px;
+      font-weight:800
+    }
+
+    .change.positive{color:var(--green)}
+    .change.negative{color:var(--red)}
+    .change.neutral{color:var(--muted)}
+
+    .chart-toolbar{
+      height:42px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      padding:0 12px;
+      gap:14px;
+      background:#080c12
+    }
+
+    .toolbar-label{
+      color:#7d8ca1;
+      font-size:10px;
+      font-weight:800;
+      letter-spacing:.08em
+    }
+
+    .timeframes{
+      display:flex;
+      gap:3px
+    }
+
+    .timeframes button{
+      border:1px solid transparent;
+      color:#69798d;
+      background:transparent;
+      padding:4px 7px;
+      border-radius:4px;
+      font-size:10px;
+      font-weight:800;
+      cursor:pointer
+    }
+
+    .timeframes button:hover{color:#bdcce0}
+
+    .timeframes button.active{
+      color:var(--cyan);
+      background:rgba(77,199,255,.08);
+      border-color:rgba(77,199,255,.18)
+    }
+
+    .toolbar-right{
+      margin-left:auto;
+      color:#58677b;
+      font-size:9px
+    }
+
+    .chart-wrap{
+      position:relative;
+      height:570px;
+      background:#090d14
+    }
+
+    .chart-host{
+      width:100%;
+      height:100%
+    }
+
+    .chart-watermark{
+      position:absolute;
+      left:18px;
+      bottom:14px;
+      color:rgba(106,128,153,.20);
+      font-size:10px;
+      letter-spacing:.16em;
+      font-weight:800;
+      pointer-events:none
+    }
+
+    .chart-fallback{
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      color:#7d8ca1;
+      font-size:12px
+    }
+
+    .hidden{display:none}
+
+    .panel-heading{
+      height:46px;
+      padding:0 14px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      color:#a2b3c9;
+      font-size:10px;
+      font-weight:850;
+      letter-spacing:.08em
+    }
+
+    .panel-heading>span{
+      color:#586a80;
+      font-size:9px
+    }
+
+    .phase-badge{
+      color:var(--cyan)!important;
+      border:1px solid rgba(77,199,255,.2);
+      padding:3px 6px;
+      border-radius:4px;
+      background:rgba(77,199,255,.05)
+    }
+
+    .scanner-state{
+      padding:18px 14px;
+      display:grid;
+      grid-template-columns:56px 1fr;
+      gap:13px;
+      border-bottom:1px solid var(--border);
+      align-items:center
+    }
+
+    .scanner-ring{
+      width:54px;
+      height:54px;
+      border-radius:50%;
+      border:1px solid #1e4154;
+      display:grid;
+      place-items:center;
+      position:relative;
+      box-shadow:inset 0 0 20px rgba(77,199,255,.05)
+    }
+
+    .scanner-ring:before{
+      content:"";
+      position:absolute;
+      inset:5px;
+      border:1px dashed rgba(77,199,255,.28);
+      border-radius:50%;
+      animation:spin 7s linear infinite
+    }
+
+    .scanner-core{
+      width:9px;
+      height:9px;
+      border-radius:50%;
+      background:var(--cyan);
+      box-shadow:0 0 14px rgba(77,199,255,.7)
+    }
+
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .scanner-title{
+      color:#c4d3e7;
+      font-size:13px;
+      font-weight:750
+    }
+
+    .scanner-state p{
+      margin:5px 0 0;
+      color:#67778c;
+      font-size:10px;
+      line-height:1.55
+    }
+
+    .intel-list{padding:8px 12px}
+
+    .intel-row{
+      min-height:41px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom:1px solid #111923;
+      font-size:10px;
+      color:#7f8fa4
+    }
+
+    .intel-row strong{
+      font-size:9px;
+      letter-spacing:.06em
+    }
+
+    .intel-row .pending{color:#59687a}
+
+    .doctrine-card{
+      margin:12px;
+      padding:13px;
+      background:linear-gradient(135deg,rgba(77,199,255,.06),rgba(32,214,163,.025));
+      border:1px solid #1b2937;
+      border-radius:7px
+    }
+
+    .doctrine-card span{
+      font-size:8px;
+      letter-spacing:.12em;
+      color:#587087;
+      font-weight:900
+    }
+
+    .doctrine-card strong{
+      display:block;
+      margin-top:6px;
+      font-size:12px;
+      color:#b7c9df
+    }
+
+    .doctrine-card p{
+      margin:5px 0 0;
+      font-size:9px;
+      color:#68788d;
+      line-height:1.5
+    }
+
+    .metric-card{
+      min-height:106px;
+      padding:14px;
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:9px
+    }
+
+    .metric-top{
+      color:#617087;
+      font-size:9px;
+      font-weight:850;
+      letter-spacing:.08em
+    }
+
+    .metric-value{
+      margin-top:14px;
+      font-size:18px;
+      font-weight:760;
+      color:#c8d6e8
+    }
+
+    .metric-sub{
+      margin-top:5px;
+      color:#5d6c80;
+      font-size:9px
+    }
+
+    .metric-warning .metric-value{
+      color:var(--amber);
+      font-size:12px;
+      letter-spacing:.05em
+    }
+
+    .empty-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:1px;
+      background:var(--border)
+    }
+
+    .empty-module{
+      min-height:150px;
+      padding:17px;
+      background:var(--panel)
+    }
+
+    .module-kicker{
+      color:#526579;
+      font-size:8px;
+      letter-spacing:.12em;
+      font-weight:900
+    }
+
+    .empty-module h3{
+      margin:17px 0 6px;
+      font-size:13px;
+      color:#a9bad0
+    }
+
+    .empty-module p{
+      margin:0;
+      color:#617085;
+      font-size:10px;
+      line-height:1.55;
+      max-width:330px
+    }
+
+    @media(max-width:1040px){
+      .terminal-grid{
+        grid-template-columns:1fr;
+        grid-template-areas:
+          "market"
+          "intel"
+          "metrics"
+          "bottom"
+      }
+
+      .metrics-row{
+        grid-template-columns:repeat(2,1fr)
+      }
+
+      .chart-wrap{height:500px}
+    }
+
+    @media(max-width:680px){
+      .topbar{
+        position:static;
+        align-items:flex-start
+      }
+
+      .topbar-statuses{max-width:150px}
+      .status-pill.locked{display:none}
+
+      .terminal-grid{
+        padding:8px;
+        gap:8px
+      }
+
+      .market-header{
+        padding:13px;
+        align-items:flex-start
+      }
+
+      .live-price{font-size:20px}
+      .pair-row h1{font-size:15px}
+
+      .chart-toolbar{
+        overflow-x:auto;
+        gap:8px
+      }
+
+      .toolbar-right{display:none}
+      .chart-wrap{height:460px}
+
+      .metrics-row{
+        grid-template-columns:1fr 1fr;
+        gap:8px
+      }
+
+      .metric-card{min-height:96px}
+      .metric-value{font-size:14px}
+      .empty-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app-shell">
+
+    <header class="topbar">
+
+      <div class="brand-block">
+
+        <div class="brand-mark">AI</div>
+
+        <div>
+          <div class="eyebrow">BITCOIN INTELLIGENCE SYSTEM</div>
+          <div class="brand-title">
+            BTC AI Terminal
+            <span>v0.1</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="topbar-statuses">
+
+        <div id="feedStatus" class="status-pill connecting">
+          <span class="dot"></span>
+          CONNECTING
+        </div>
+
+        <div class="status-pill paper">
+          PAPER ONLY
+        </div>
+
+        <div class="status-pill locked">
+          LIVE EXECUTION LOCKED
+        </div>
+
+      </div>
+
+    </header>
+
+    <main class="terminal-grid">
+
+      <section class="market-panel panel">
+
+        <div class="market-header">
+
+          <div class="pair-row">
+
+            <div class="btc-coin">₿</div>
+
+            <div>
+              <h1>BTC / USD</h1>
+              <span>Coinbase public market data</span>
+            </div>
+
+          </div>
+
+          <div class="price-block">
+            <div id="livePrice" class="live-price">—</div>
+            <div id="change24h" class="change neutral">—</div>
+          </div>
+
+        </div>
+
+        <div class="chart-toolbar">
+
+          <div class="toolbar-label">
+            PRICE
+          </div>
+
+          <div id="timeframes" class="timeframes">
+
+            <button data-tf="1m" class="active">1m</button>
+            <button data-tf="5m">5m</button>
+            <button data-tf="15m">15m</button>
+            <button data-tf="1h">1h</button>
+            <button data-tf="6h">6h</button>
+            <button data-tf="1d">1d</button>
+
+          </div>
+
+          <div id="chartState" class="toolbar-right">
+            Loading history…
+          </div>
+
+        </div>
+
+        <div class="chart-wrap">
+
+          <div id="chart" class="chart-host"></div>
+
+          <div id="chartFallback" class="chart-fallback hidden">
+            Chart library could not load. Price feed is still available.
+          </div>
+
+          <div class="chart-watermark">
+            BTC AI / PAPER RESEARCH
+          </div>
+
+        </div>
+
+      </section>
+
+      <aside class="intel-panel panel">
+
+        <div class="panel-heading">
+          <div>AI INTELLIGENCE</div>
+          <span class="phase-badge">PHASE 1</span>
+        </div>
+
+        <div class="scanner-state">
+
+          <div class="scanner-ring">
+            <div class="scanner-core"></div>
+          </div>
+
+          <div>
+            <div class="scanner-title">
+              Observation mode
+            </div>
+
+            <p>
+              Market ingestion is active. Strategy inference and paper
+              execution remain locked until those engines are built and validated.
+            </p>
+
+          </div>
+
+        </div>
+
+        <div class="intel-list">
+
+          <div class="intel-row">
+            <span>Anomaly scanner</span>
+            <strong class="pending">NEXT</strong>
+          </div>
+
+          <div class="intel-row">
+            <span>Order flow</span>
+            <strong class="pending">NEXT</strong>
+          </div>
+
+          <div class="intel-row">
+            <span>Confidence engine</span>
+            <strong class="pending">NEXT</strong>
+          </div>
+
+          <div class="intel-row">
+            <span>Practice engine</span>
+            <strong class="pending">NEXT</strong>
+          </div>
+
+          <div class="intel-row">
+            <span>Learning journal</span>
+            <strong class="pending">READY FOR DB</strong>
+          </div>
+
+        </div>
+
+        <div class="doctrine-card">
+
+          <span>OPERATING DOCTRINE</span>
+
+          <strong>
+            Work relentlessly. Trade selectively.
+          </strong>
+
+          <p>
+            Accuracy over activity. Capital preservation over forced opportunity.
+          </p>
+
+        </div>
+
+      </aside>
+
+      <section class="metrics-row">
+
+        <div class="metric-card">
+          <div class="metric-top">24H HIGH</div>
+          <div id="high24h" class="metric-value">—</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-top">24H LOW</div>
+          <div id="low24h" class="metric-value">—</div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-top">24H BTC VOLUME</div>
+          <div id="volume24h" class="metric-value">—</div>
+        </div>
+
+        <div class="metric-card metric-warning">
+          <div class="metric-top">PAPER EQUITY</div>
+          <div class="metric-value">NOT INITIALIZED</div>
+          <div class="metric-sub">Execution engine not enabled</div>
+        </div>
+
+      </section>
+
+      <section class="bottom-panel panel">
+
+        <div class="panel-heading">
+          <div>PRACTICE & SETUP LAB</div>
+          <span>NO LIVE CAPITAL</span>
+        </div>
+
+        <div class="empty-grid">
+
+          <div class="empty-module">
+
+            <div class="module-kicker">
+              SETUP QUEUE
+            </div>
+
+            <h3>
+              Waiting for analysis engine
+            </h3>
+
+            <p>
+              Candidate inefficiencies, invalidations, entries and confidence
+              scores will populate here.
+            </p>
+
+          </div>
+
+          <div class="empty-module">
+
+            <div class="module-kicker">
+              PAPER TRADES
+            </div>
+
+            <h3>
+              No simulated positions
+            </h3>
+
+            <p>
+              The paper execution layer will record fills, fees, slippage,
+              stops and post-trade review.
+            </p>
+
+          </div>
+
+          <div class="empty-module">
+
+            <div class="module-kicker">
+              LEARNING LOG
+            </div>
+
+            <h3>
+              Journal not started
+            </h3>
+
+            <p>
+              Supabase will retain hypotheses, outcomes, counterfactuals and
+              promotion status.
+            </p>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <script src="https://unpkg.com/lightweight-charts@5.2.1/dist/lightweight-charts.standalone.production.js"></script>
+
+  <script>
+    (() => {
+
+      'use strict';
+
+      const REST = 'https://api.exchange.coinbase.com';
+      const WS = 'wss://ws-feed.exchange.coinbase.com';
+
+      const granularities = {
+        '1m': 60,
+        '5m': 300,
+        '15m': 900,
+        '1h': 3600,
+        '6h': 21600,
+        '1d': 86400
+      };
+
+      const els = {
+
+        feedStatus: document.querySelector('#feedStatus'),
+        livePrice: document.querySelector('#livePrice'),
+        change24h: document.querySelector('#change24h'),
+        high24h: document.querySelector('#high24h'),
+        low24h: document.querySelector('#low24h'),
+        volume24h: document.querySelector('#volume24h'),
+        chartState: document.querySelector('#chartState'),
+        chart: document.querySelector('#chart'),
+        chartFallback: document.querySelector('#chartFallback'),
+        timeframes: document.querySelector('#timeframes')
+
+      };
+
+      let timeframe = '1m';
+      let candles = [];
+      let lastTicker = null;
+      let chart = null;
+      let candleSeries = null;
+
+      const money = (value) =>
+        value == null || Number.isNaN(value)
+          ? '—'
+          : new Intl.NumberFormat(
+              'en-US',
+              {
+                style: 'currency',
+                currency: 'USD',
+                maximumFractionDigits: 2
+              }
+            ).format(value);
+
+      const compact = (value) =>
+        value == null || Number.isNaN(value)
+          ? '—'
+          : new Intl.NumberFormat(
+              'en-US',
+              {
+                maximumFractionDigits: 1
+              }
+            ).format(value);
+
+      function setFeedStatus(status) {
+
+        els.feedStatus.className =
+          `status-pill ${status}`;
+
+        const labels = {
+          live: 'LIVE FEED',
+          connecting: 'CONNECTING',
+          offline: 'OFFLINE'
+        };
+
+        els.feedStatus.innerHTML =
+          `<span class="dot"></span> ${labels[status] || status.toUpperCase()}`;
+
+      }
+
+      function renderTicker() {
+
+        if (!lastTicker) return;
+
+        els.livePrice.textContent =
+          money(lastTicker.price);
+
+        els.high24h.textContent =
+          money(lastTicker.high24h);
+
+        els.low24h.textContent =
+          money(lastTicker.low24h);
+
+        els.volume24h.textContent =
+          lastTicker.volume24h == null
+            ? '—'
+            : `${compact(lastTicker.volume24h)} BTC`;
+
+        if (lastTicker.open24h) {
+
+          const change =
+            (
+              (lastTicker.price - lastTicker.open24h)
+              / lastTicker.open24h
+            ) * 100;
+
+          els.change24h.textContent =
+            `${change >= 0 ? '+' : ''}${change.toFixed(2)}% 24h`;
+
+          els.change24h.className =
+            `change ${change >= 0 ? 'positive' : 'negative'}`;
+
+        }
+
+      }
+
+      async function fetchJson(url) {
+
+        const response = await fetch(
+          url,
+          {
+            headers: {
+              Accept: 'application/json'
+            }
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            `${response.status} ${response.statusText}`
+          );
+        }
+
+        return response.json();
+
+      }
+
+      async function loadTickerSnapshot() {
+
+        const [ticker, stats] =
+          await Promise.all([
+            fetchJson(
+              `${REST}/products/BTC-USD/ticker`
+            ),
+            fetchJson(
+              `${REST}/products/BTC-USD/stats`
+            )
+          ]);
+
+        lastTicker = {
+
+          price: Number(ticker.price),
+          open24h: Number(stats.open),
+          high24h: Number(stats.high),
+          low24h: Number(stats.low),
+          volume24h: Number(stats.volume),
+          time: ticker.time
+
+        };
+
+        renderTicker();
+
+      }
+
+      async function loadCandles() {
+
+        const granularity =
+          granularities[timeframe] || 60;
+
+        els.chartState.textContent =
+          'Loading history…';
+
+        const rows =
+          await fetchJson(
+            `${REST}/products/BTC-USD/candles?granularity=${granularity}`
+          );
+
+        candles =
+          rows
+            .map(
+              ([time, low, high, open, close, volume]) =>
+                ({
+                  time,
+                  low,
+                  high,
+                  open,
+                  close,
+                  volume
+                })
+            )
+            .sort(
+              (a, b) =>
+                a.time - b.time
+            );
+
+        if (candleSeries) {
+
+          candleSeries.setData(
+
+            candles.map(
+              (c) => ({
+                time: c.time,
+                open: c.open,
+                high: c.high,
+                low: c.low,
+                close: c.close
+              })
+            )
+
+          );
+
+          chart.timeScale().fitContent();
+
+        }
+
+        els.chartState.textContent =
+          `${candles.length} candles`;
+
+      }
+
+      function initChart() {
+
+        if (
+          !window.LightweightCharts ||
+          !els.chart
+        ) {
+
+          els.chartFallback.classList.remove(
+            'hidden'
+          );
+
+          return;
+
+        }
+
+        const {
+          createChart,
+          CandlestickSeries,
+          ColorType,
+          CrosshairMode
+        } = window.LightweightCharts;
+
+        chart =
+          createChart(
+            els.chart,
+            {
+              width:
+                els.chart.clientWidth,
+
+              height:
+                els.chart.clientHeight,
+
+              layout: {
+                background: {
+                  type: ColorType.Solid,
+                  color: '#090d14'
+                },
+
+                textColor: '#7f8da5',
+
+                fontFamily:
+                  'Inter, system-ui, sans-serif'
+              },
+
+              grid: {
+                vertLines: {
+                  color: '#111925'
+                },
+
+                horzLines: {
+                  color: '#111925'
+                }
+              },
+
+              rightPriceScale: {
+                borderColor: '#1b2635',
+
+                scaleMargins: {
+                  top: 0.08,
+                  bottom: 0.08
+                }
+              },
+
+              timeScale: {
+                borderColor: '#1b2635',
+                timeVisible: true,
+                secondsVisible: false
+              },
+
+              crosshair: {
+                mode: CrosshairMode.Normal
+              }
+            }
+          );
+
+        candleSeries =
+          chart.addSeries(
+            CandlestickSeries,
+            {
+              upColor: '#20d6a3',
+              downColor: '#ff506d',
+              borderUpColor: '#20d6a3',
+              borderDownColor: '#ff506d',
+              wickUpColor: '#20d6a3',
+              wickDownColor: '#ff506d',
+              priceLineVisible: true,
+              lastValueVisible: true
+            }
+          );
+
+        const ro =
+          new ResizeObserver(
+            () =>
+              chart.applyOptions({
+                width:
+                  els.chart.clientWidth,
+
+                height:
+                  els.chart.clientHeight
+              })
+          );
+
+        ro.observe(
+          els.chart
+        );
+
+      }
+
+      function updateCurrentCandle(price) {
+
+        if (
+          !candleSeries ||
+          !candles.length
+        ) return;
+
+        const last =
+          candles[
+            candles.length - 1
+          ];
+
+        candleSeries.update({
+
+          time: last.time,
+
+          open: last.open,
+
+          high:
+            Math.max(
+              last.high,
+              price
+            ),
+
+          low:
+            Math.min(
+              last.low,
+              price
+            ),
+
+          close: price
+
+        });
+
+      }
+
+      function connectTicker() {
+
+        setFeedStatus(
+          'connecting'
+        );
+
+        const ws =
+          new WebSocket(WS);
+
+        ws.addEventListener(
+          'open',
+          () => {
+
+            ws.send(
+              JSON.stringify({
+                type: 'subscribe',
+                product_ids: [
+                  'BTC-USD'
+                ],
+                channels: [
+                  'ticker'
+                ]
+              })
+            );
+
+            setFeedStatus(
+              'live'
+            );
+
+          }
+        );
+
+        ws.addEventListener(
+          'message',
+          (event) => {
+
+            const data =
+              JSON.parse(
+                event.data
+              );
+
+            if (
+              data.type !== 'ticker' ||
+              data.product_id !== 'BTC-USD' ||
+              !data.price
+            ) return;
+
+            lastTicker = {
+
+              price:
+                Number(
+                  data.price
+                ),
+
+              open24h:
+                data.open_24h
+                  ? Number(
+                      data.open_24h
+                    )
+                  : lastTicker?.open24h ?? null,
+
+              high24h:
+                data.high_24h
+                  ? Number(
+                      data.high_24h
+                    )
+                  : lastTicker?.high24h ?? null,
+
+              low24h:
+                data.low_24h
+                  ? Number(
+                      data.low_24h
+                    )
+                  : lastTicker?.low24h ?? null,
+
+              volume24h:
+                data.volume_24h
+                  ? Number(
+                      data.volume_24h
+                    )
+                  : lastTicker?.volume24h ?? null,
+
+              time:
+                data.time
+            };
+
+            renderTicker();
+
+            updateCurrentCandle(
+              lastTicker.price
+            );
+
+          }
+        );
+
+        ws.addEventListener(
+          'error',
+          () =>
+            setFeedStatus(
+              'offline'
+            )
+        );
+
+        ws.addEventListener(
+          'close',
+          () => {
+
+            setFeedStatus(
+              'offline'
+            );
+
+            setTimeout(
+              connectTicker,
+              5000
+            );
+
+          }
+        );
+
+      }
+
+      els.timeframes.addEventListener(
+        'click',
+        async (event) => {
+
+          const button =
+            event.target.closest(
+              'button[data-tf]'
+            );
+
+          if (!button) return;
+
+          timeframe =
+            button.dataset.tf;
+
+          [
+            ...els.timeframes.querySelectorAll(
+              'button'
+            )
+          ].forEach(
+            (btn) =>
+              btn.classList.toggle(
+                'active',
+                btn === button
+              )
+          );
+
+          try {
+
+            await loadCandles();
+
+          } catch (error) {
+
+            els.chartState.textContent =
+              `History error: ${error.message}`;
+
+          }
+
+        }
+      );
+
+      async function boot() {
+
+        initChart();
+
+        try {
+
+          await Promise.all([
+            loadTickerSnapshot(),
+            loadCandles()
+          ]);
+
+        } catch (error) {
+
+          els.chartState.textContent =
+            `Market data error: ${error.message}`;
+
+        }
+
+        connectTicker();
+
+      }
+
+      boot();
+
+    })();
+  </script>
+
+</body>
+</html>
