@@ -63,7 +63,11 @@
       z-index:20
     }
 
-    .brand-block{display:flex;align-items:center;gap:12px}
+    .brand-block{
+      display:flex;
+      align-items:center;
+      gap:12px
+    }
 
     .brand-mark{
       width:42px;
@@ -154,7 +158,8 @@
       grid-template-areas:
         "market intel"
         "metrics metrics"
-        "bottom bottom";
+        "bottom bottom"
+        "research research";
       gap:12px
     }
 
@@ -202,14 +207,12 @@
       font-weight:900;
       display:grid;
       place-items:center;
-      font-size:21px;
-      box-shadow:0 0 25px rgba(245,166,35,.10)
+      font-size:21px
     }
 
     .pair-row h1{
       margin:0;
-      font-size:18px;
-      letter-spacing:.02em
+      font-size:18px
     }
 
     .pair-row span{
@@ -221,8 +224,7 @@
 
     .live-price{
       font-size:26px;
-      font-weight:760;
-      letter-spacing:-.02em
+      font-weight:760
     }
 
     .change{
@@ -248,8 +250,7 @@
     .toolbar-label{
       color:#7d8ca1;
       font-size:10px;
-      font-weight:800;
-      letter-spacing:.08em
+      font-weight:800
     }
 
     .timeframes{
@@ -267,8 +268,6 @@
       font-weight:800;
       cursor:pointer
     }
-
-    .timeframes button:hover{color:#bdcce0}
 
     .timeframes button.active{
       color:var(--cyan);
@@ -357,8 +356,7 @@
       border:1px solid #1e4154;
       display:grid;
       place-items:center;
-      position:relative;
-      box-shadow:inset 0 0 20px rgba(77,199,255,.05)
+      position:relative
     }
 
     .scanner-ring:before{
@@ -378,7 +376,9 @@
       box-shadow:0 0 14px rgba(77,199,255,.7)
     }
 
-    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes spin{
+      to{transform:rotate(360deg)}
+    }
 
     .scanner-title{
       color:#c4d3e7;
@@ -409,8 +409,6 @@
       font-size:9px;
       letter-spacing:.06em
     }
-
-    .intel-row .pending{color:#59687a}
 
     .doctrine-card{
       margin:12px;
@@ -469,12 +467,6 @@
       font-size:9px
     }
 
-    .metric-warning .metric-value{
-      color:var(--amber);
-      font-size:12px;
-      letter-spacing:.05em
-    }
-
     .empty-grid{
       display:grid;
       grid-template-columns:repeat(3,1fr);
@@ -505,8 +497,107 @@
       margin:0;
       color:#617085;
       font-size:10px;
-      line-height:1.55;
-      max-width:330px
+      line-height:1.55
+    }
+
+    .bot-research{
+      grid-area:research;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px
+    }
+
+    .research-card{
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:9px;
+      overflow:hidden
+    }
+
+    .research-body{padding:12px}
+
+    .research-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px
+    }
+
+    .stat-box{
+      border:1px solid var(--border);
+      background:#080c12;
+      border-radius:6px;
+      padding:10px
+    }
+
+    .stat-box .label{
+      font-size:8px;
+      color:#5f7085;
+      letter-spacing:.08em;
+      font-weight:850
+    }
+
+    .stat-box .value{
+      font-size:15px;
+      color:#bfd0e3;
+      font-weight:800;
+      margin-top:5px
+    }
+
+    .strategy-item{
+      padding:10px 0;
+      border-top:1px solid #111923
+    }
+
+    .strategy-item:first-child{
+      border-top:0
+    }
+
+    .strategy-name{
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      font-size:9px;
+      color:#aebfd3;
+      font-weight:800
+    }
+
+    .strategy-meta{
+      margin-top:5px;
+      color:#65768a;
+      font-size:8px;
+      line-height:1.55
+    }
+
+    .learning-event{
+      padding:9px 0;
+      border-top:1px solid #111923
+    }
+
+    .learning-event:first-child{
+      border-top:0
+    }
+
+    .learning-event strong{
+      font-size:8px;
+      color:#aebfd3
+    }
+
+    .learning-event p{
+      font-size:8px;
+      color:#66778b;
+      line-height:1.45;
+      margin:4px 0 0
+    }
+
+    .positive-text{color:var(--green)!important}
+    .negative-text{color:var(--red)!important}
+    .warning-text{color:var(--amber)!important}
+
+    .micro-note{
+      font-size:8px;
+      color:#526378;
+      line-height:1.45;
+      margin-top:9px
     }
 
     @media(max-width:1040px){
@@ -517,13 +608,20 @@
           "intel"
           "metrics"
           "bottom"
+          "research"
       }
 
       .metrics-row{
         grid-template-columns:repeat(2,1fr)
       }
 
-      .chart-wrap{height:500px}
+      .bot-research{
+        grid-template-columns:1fr
+      }
+
+      .chart-wrap{
+        height:500px
+      }
     }
 
     @media(max-width:680px){
@@ -532,8 +630,13 @@
         align-items:flex-start
       }
 
-      .topbar-statuses{max-width:150px}
-      .status-pill.locked{display:none}
+      .topbar-statuses{
+        max-width:170px
+      }
+
+      .status-pill.locked{
+        display:none
+      }
 
       .terminal-grid{
         padding:8px;
@@ -545,845 +648,1743 @@
         align-items:flex-start
       }
 
-      .live-price{font-size:20px}
-      .pair-row h1{font-size:15px}
-
-      .chart-toolbar{
-        overflow-x:auto;
-        gap:8px
+      .live-price{
+        font-size:20px
       }
 
-      .toolbar-right{display:none}
-      .chart-wrap{height:460px}
+      .pair-row h1{
+        font-size:15px
+      }
+
+      .chart-toolbar{
+        overflow-x:auto
+      }
+
+      .toolbar-right{
+        display:none
+      }
+
+      .chart-wrap{
+        height:460px
+      }
 
       .metrics-row{
         grid-template-columns:1fr 1fr;
         gap:8px
       }
 
-      .metric-card{min-height:96px}
-      .metric-value{font-size:14px}
-      .empty-grid{grid-template-columns:1fr}
+      .research-grid{
+        grid-template-columns:1fr 1fr
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <div class="app-shell">
+<div class="app-shell">
 
-    <header class="topbar">
+<header class="topbar">
 
-      <div class="brand-block">
+  <div class="brand-block">
 
-        <div class="brand-mark">AI</div>
+    <div class="brand-mark">AI</div>
 
-        <div>
-          <div class="eyebrow">BITCOIN INTELLIGENCE SYSTEM</div>
-          <div class="brand-title">
-            BTC AI Terminal
-            <span>v0.1</span>
-          </div>
-        </div>
-
+    <div>
+      <div class="eyebrow">
+        BITCOIN INTELLIGENCE SYSTEM
       </div>
 
-      <div class="topbar-statuses">
-
-        <div id="feedStatus" class="status-pill connecting">
-          <span class="dot"></span>
-          CONNECTING
-        </div>
-
-        <div class="status-pill paper">
-          PAPER ONLY
-        </div>
-
-        <div class="status-pill locked">
-          LIVE EXECUTION LOCKED
-        </div>
-
+      <div class="brand-title">
+        BTC AI Terminal
+        <span>v0.2 • AUTONOMOUS PAPER ENGINE</span>
       </div>
-
-    </header>
-
-    <main class="terminal-grid">
-
-      <section class="market-panel panel">
-
-        <div class="market-header">
-
-          <div class="pair-row">
-
-            <div class="btc-coin">₿</div>
-
-            <div>
-              <h1>BTC / USD</h1>
-              <span>Coinbase public market data</span>
-            </div>
-
-          </div>
-
-          <div class="price-block">
-            <div id="livePrice" class="live-price">—</div>
-            <div id="change24h" class="change neutral">—</div>
-          </div>
-
-        </div>
-
-        <div class="chart-toolbar">
-
-          <div class="toolbar-label">
-            PRICE
-          </div>
-
-          <div id="timeframes" class="timeframes">
-
-            <button data-tf="1m" class="active">1m</button>
-            <button data-tf="5m">5m</button>
-            <button data-tf="15m">15m</button>
-            <button data-tf="1h">1h</button>
-            <button data-tf="6h">6h</button>
-            <button data-tf="1d">1d</button>
-
-          </div>
-
-          <div id="chartState" class="toolbar-right">
-            Loading history…
-          </div>
-
-        </div>
-
-        <div class="chart-wrap">
-
-          <div id="chart" class="chart-host"></div>
-
-          <div id="chartFallback" class="chart-fallback hidden">
-            Chart library could not load. Price feed is still available.
-          </div>
-
-          <div class="chart-watermark">
-            BTC AI / PAPER RESEARCH
-          </div>
-
-        </div>
-
-      </section>
-
-      <aside class="intel-panel panel">
-
-        <div class="panel-heading">
-          <div>AI INTELLIGENCE</div>
-          <span class="phase-badge">PHASE 1</span>
-        </div>
-
-        <div class="scanner-state">
-
-          <div class="scanner-ring">
-            <div class="scanner-core"></div>
-          </div>
-
-          <div>
-            <div class="scanner-title">
-              Observation mode
-            </div>
-
-            <p>
-              Market ingestion is active. Strategy inference and paper
-              execution remain locked until those engines are built and validated.
-            </p>
-
-          </div>
-
-        </div>
-
-        <div class="intel-list">
-
-          <div class="intel-row">
-            <span>Anomaly scanner</span>
-            <strong class="pending">NEXT</strong>
-          </div>
-
-          <div class="intel-row">
-            <span>Order flow</span>
-            <strong class="pending">NEXT</strong>
-          </div>
-
-          <div class="intel-row">
-            <span>Confidence engine</span>
-            <strong class="pending">NEXT</strong>
-          </div>
-
-          <div class="intel-row">
-            <span>Practice engine</span>
-            <strong class="pending">NEXT</strong>
-          </div>
-
-          <div class="intel-row">
-            <span>Learning journal</span>
-            <strong class="pending">READY FOR DB</strong>
-          </div>
-
-        </div>
-
-        <div class="doctrine-card">
-
-          <span>OPERATING DOCTRINE</span>
-
-          <strong>
-            Work relentlessly. Trade selectively.
-          </strong>
-
-          <p>
-            Accuracy over activity. Capital preservation over forced opportunity.
-          </p>
-
-        </div>
-
-      </aside>
-
-      <section class="metrics-row">
-
-        <div class="metric-card">
-          <div class="metric-top">24H HIGH</div>
-          <div id="high24h" class="metric-value">—</div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-top">24H LOW</div>
-          <div id="low24h" class="metric-value">—</div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-top">24H BTC VOLUME</div>
-          <div id="volume24h" class="metric-value">—</div>
-        </div>
-
-        <div class="metric-card metric-warning">
-          <div class="metric-top">PAPER EQUITY</div>
-          <div class="metric-value">NOT INITIALIZED</div>
-          <div class="metric-sub">Execution engine not enabled</div>
-        </div>
-
-      </section>
-
-      <section class="bottom-panel panel">
-
-        <div class="panel-heading">
-          <div>PRACTICE & SETUP LAB</div>
-          <span>NO LIVE CAPITAL</span>
-        </div>
-
-        <div class="empty-grid">
-
-          <div class="empty-module">
-
-            <div class="module-kicker">
-              SETUP QUEUE
-            </div>
-
-            <h3>
-              Waiting for analysis engine
-            </h3>
-
-            <p>
-              Candidate inefficiencies, invalidations, entries and confidence
-              scores will populate here.
-            </p>
-
-          </div>
-
-          <div class="empty-module">
-
-            <div class="module-kicker">
-              PAPER TRADES
-            </div>
-
-            <h3>
-              No simulated positions
-            </h3>
-
-            <p>
-              The paper execution layer will record fills, fees, slippage,
-              stops and post-trade review.
-            </p>
-
-          </div>
-
-          <div class="empty-module">
-
-            <div class="module-kicker">
-              LEARNING LOG
-            </div>
-
-            <h3>
-              Journal not started
-            </h3>
-
-            <p>
-              Supabase will retain hypotheses, outcomes, counterfactuals and
-              promotion status.
-            </p>
-
-          </div>
-
-        </div>
-
-      </section>
-
-    </main>
+    </div>
 
   </div>
 
-  <script src="https://unpkg.com/lightweight-charts@5.2.1/dist/lightweight-charts.standalone.production.js"></script>
+  <div class="topbar-statuses">
 
-  <script>
-    (() => {
+    <div id="feedStatus" class="status-pill connecting">
+      <span class="dot"></span>
+      MARKET FEED
+    </div>
 
-      'use strict';
+    <div id="botStatus" class="status-pill connecting">
+      <span class="dot"></span>
+      BOT CHECK
+    </div>
 
-      const REST = 'https://api.exchange.coinbase.com';
-      const WS = 'wss://ws-feed.exchange.coinbase.com';
+    <div id="practiceStatus" class="status-pill connecting">
+      <span class="dot"></span>
+      PRACTICE CHECK
+    </div>
 
-      const granularities = {
-        '1m': 60,
-        '5m': 300,
-        '15m': 900,
-        '1h': 3600,
-        '6h': 21600,
-        '1d': 86400
-      };
+    <div class="status-pill paper">
+      PAPER ONLY
+    </div>
 
-      const els = {
+    <div class="status-pill locked">
+      LIVE EXECUTION LOCKED
+    </div>
 
-        feedStatus: document.querySelector('#feedStatus'),
-        livePrice: document.querySelector('#livePrice'),
-        change24h: document.querySelector('#change24h'),
-        high24h: document.querySelector('#high24h'),
-        low24h: document.querySelector('#low24h'),
-        volume24h: document.querySelector('#volume24h'),
-        chartState: document.querySelector('#chartState'),
-        chart: document.querySelector('#chart'),
-        chartFallback: document.querySelector('#chartFallback'),
-        timeframes: document.querySelector('#timeframes')
+  </div>
 
-      };
+</header>
 
-      let timeframe = '1m';
-      let candles = [];
-      let lastTicker = null;
-      let chart = null;
-      let candleSeries = null;
+<main class="terminal-grid">
 
-      const money = (value) =>
-        value == null || Number.isNaN(value)
-          ? '—'
-          : new Intl.NumberFormat(
-              'en-US',
-              {
-                style: 'currency',
-                currency: 'USD',
-                maximumFractionDigits: 2
-              }
-            ).format(value);
+<section class="market-panel panel">
 
-      const compact = (value) =>
-        value == null || Number.isNaN(value)
-          ? '—'
-          : new Intl.NumberFormat(
-              'en-US',
-              {
-                maximumFractionDigits: 1
-              }
-            ).format(value);
+  <div class="market-header">
 
-      function setFeedStatus(status) {
+    <div class="pair-row">
 
-        els.feedStatus.className =
-          `status-pill ${status}`;
+      <div class="btc-coin">
+        ₿
+      </div>
 
-        const labels = {
-          live: 'LIVE FEED',
-          connecting: 'CONNECTING',
-          offline: 'OFFLINE'
-        };
+      <div>
+        <h1>BTC / USD</h1>
+        <span>Coinbase public market data</span>
+      </div>
 
-        els.feedStatus.innerHTML =
-          `<span class="dot"></span> ${labels[status] || status.toUpperCase()}`;
+    </div>
 
+    <div class="price-block">
+
+      <div id="livePrice" class="live-price">
+        —
+      </div>
+
+      <div id="change24h" class="change neutral">
+        —
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="chart-toolbar">
+
+    <div class="toolbar-label">
+      PRICE
+    </div>
+
+    <div id="timeframes" class="timeframes">
+
+      <button data-tf="1m" class="active">
+        1m
+      </button>
+
+      <button data-tf="5m">
+        5m
+      </button>
+
+      <button data-tf="15m">
+        15m
+      </button>
+
+      <button data-tf="1h">
+        1h
+      </button>
+
+      <button data-tf="6h">
+        6h
+      </button>
+
+      <button data-tf="1d">
+        1d
+      </button>
+
+    </div>
+
+    <div id="chartState" class="toolbar-right">
+      Loading history…
+    </div>
+
+  </div>
+
+  <div class="chart-wrap">
+
+    <div id="chart" class="chart-host"></div>
+
+    <div id="chartFallback" class="chart-fallback hidden">
+      Chart library could not load.
+    </div>
+
+    <div class="chart-watermark">
+      BTC AI / PAPER RESEARCH
+    </div>
+
+  </div>
+
+</section>
+
+<aside class="intel-panel panel">
+
+  <div class="panel-heading">
+
+    <div>
+      AI INTELLIGENCE
+    </div>
+
+    <span class="phase-badge">
+      PHASE 1
+    </span>
+
+  </div>
+
+  <div class="scanner-state">
+
+    <div class="scanner-ring">
+      <div class="scanner-core"></div>
+    </div>
+
+    <div>
+
+      <div id="scannerTitle" class="scanner-title">
+        Connecting to autonomous engine
+      </div>
+
+      <p id="scannerCopy">
+        The bot runs independently of this page.
+      </p>
+
+    </div>
+
+  </div>
+
+  <div class="intel-list">
+
+    <div class="intel-row">
+      <span>Anomaly score</span>
+      <strong id="anomalyScore">—</strong>
+    </div>
+
+    <div class="intel-row">
+      <span>Market regime</span>
+      <strong id="marketRegime">—</strong>
+    </div>
+
+    <div class="intel-row">
+      <span>Confidence gate</span>
+      <strong id="confidenceGate">—</strong>
+    </div>
+
+    <div class="intel-row">
+      <span>Live scan cycles</span>
+      <strong id="scanCycles">—</strong>
+    </div>
+
+    <div class="intel-row">
+      <span>Historical practice</span>
+      <strong id="practiceCycles">—</strong>
+    </div>
+
+    <div class="intel-row">
+      <span>Last decision</span>
+      <strong id="lastDecision">—</strong>
+    </div>
+
+  </div>
+
+  <div class="doctrine-card">
+
+    <span>
+      OPERATING DOCTRINE
+    </span>
+
+    <strong>
+      Work relentlessly. Trade selectively.
+    </strong>
+
+    <p>
+      Accuracy over activity. Capital preservation over forced opportunity.
+    </p>
+
+  </div>
+
+</aside>
+
+<section class="metrics-row">
+
+  <div class="metric-card">
+
+    <div class="metric-top">
+      24H HIGH
+    </div>
+
+    <div id="high24h" class="metric-value">
+      —
+    </div>
+
+  </div>
+
+  <div class="metric-card">
+
+    <div class="metric-top">
+      24H LOW
+    </div>
+
+    <div id="low24h" class="metric-value">
+      —
+    </div>
+
+  </div>
+
+  <div class="metric-card">
+
+    <div class="metric-top">
+      24H BTC VOLUME
+    </div>
+
+    <div id="volume24h" class="metric-value">
+      —
+    </div>
+
+  </div>
+
+  <div class="metric-card">
+
+    <div class="metric-top">
+      PAPER EQUITY
+    </div>
+
+    <div id="paperEquity" class="metric-value">
+      —
+    </div>
+
+    <div id="paperEquitySub" class="metric-sub">
+      Autonomous simulated account
+    </div>
+
+  </div>
+
+</section>
+
+<section class="bottom-panel panel">
+
+  <div class="panel-heading">
+
+    <div>
+      PRACTICE & SETUP LAB
+    </div>
+
+    <span>
+      NO LIVE CAPITAL
+    </span>
+
+  </div>
+
+  <div class="empty-grid">
+
+    <div id="setupModule" class="empty-module">
+
+      <div class="module-kicker">
+        SETUP QUEUE
+      </div>
+
+      <h3>
+        Scanning continuously
+      </h3>
+
+      <p>
+        No qualifying setup yet.
+      </p>
+
+    </div>
+
+    <div id="tradeModule" class="empty-module">
+
+      <div class="module-kicker">
+        PAPER TRADES
+      </div>
+
+      <h3>
+        No simulated positions
+      </h3>
+
+      <p>
+        The bot can choose not to trade.
+      </p>
+
+    </div>
+
+    <div id="learningModule" class="empty-module">
+
+      <div class="module-kicker">
+        LEARNING LOG
+      </div>
+
+      <h3>
+        Learning engine active
+      </h3>
+
+      <p>
+        Waiting for reviewed evidence.
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+<section class="bot-research">
+
+  <div class="research-card">
+
+    <div class="panel-heading">
+
+      <div>
+        VALIDATION & PRACTICE
+      </div>
+
+      <span>
+        GATED LEARNING
+      </span>
+
+    </div>
+
+    <div class="research-body">
+
+      <div class="research-grid">
+
+        <div class="stat-box">
+
+          <div class="label">
+            HISTORICAL CANDLES
+          </div>
+
+          <div id="practiceCandles" class="value">
+            —
+          </div>
+
+        </div>
+
+        <div class="stat-box">
+
+          <div class="label">
+            SETUPS PRACTICED
+          </div>
+
+          <div id="practiceSetups" class="value">
+            —
+          </div>
+
+        </div>
+
+        <div class="stat-box">
+
+          <div class="label">
+            PRACTICE SESSIONS
+          </div>
+
+          <div id="practiceSessions" class="value">
+            —
+          </div>
+
+        </div>
+
+        <div class="stat-box">
+
+          <div class="label">
+            TOTAL PAPER P&L
+          </div>
+
+          <div id="totalPaperPnl" class="value">
+            —
+          </div>
+
+        </div>
+
+      </div>
+
+      <div id="strategyStats" style="margin-top:10px">
+
+        <div class="micro-note">
+          Waiting for strategy evidence…
+        </div>
+
+      </div>
+
+      <div class="micro-note">
+        Historical replay evidence is kept separate from forward paper trades.
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="research-card">
+
+    <div class="panel-heading">
+
+      <div>
+        LEARNING JOURNAL
+      </div>
+
+      <span>
+        AUDITABLE
+      </span>
+
+    </div>
+
+    <div id="learningFeed" class="research-body">
+
+      <div class="micro-note">
+        Waiting for reviewed evidence…
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+</main>
+
+</div>
+
+<script src="https://unpkg.com/lightweight-charts@5.2.1/dist/lightweight-charts.standalone.production.js"></script>
+
+<script>
+(() => {
+
+  'use strict';
+
+  const REST =
+    'https://api.exchange.coinbase.com';
+
+  const WS =
+    'wss://ws-feed.exchange.coinbase.com';
+
+  const granularities = {
+    '1m':60,
+    '5m':300,
+    '15m':900,
+    '1h':3600,
+    '6h':21600,
+    '1d':86400
+  };
+
+  const els = {
+
+    feedStatus:
+      document.querySelector('#feedStatus'),
+
+    livePrice:
+      document.querySelector('#livePrice'),
+
+    change24h:
+      document.querySelector('#change24h'),
+
+    high24h:
+      document.querySelector('#high24h'),
+
+    low24h:
+      document.querySelector('#low24h'),
+
+    volume24h:
+      document.querySelector('#volume24h'),
+
+    chartState:
+      document.querySelector('#chartState'),
+
+    chart:
+      document.querySelector('#chart'),
+
+    chartFallback:
+      document.querySelector('#chartFallback'),
+
+    timeframes:
+      document.querySelector('#timeframes')
+
+  };
+
+  let timeframe = '1m';
+
+  let candles = [];
+
+  let lastTicker = null;
+
+  let chart = null;
+
+  let candleSeries = null;
+
+  const money = value => {
+
+    if (
+      value == null ||
+      Number.isNaN(value)
+    ) {
+      return '—';
+    }
+
+    return new Intl.NumberFormat(
+      'en-US',
+      {
+        style:'currency',
+        currency:'USD',
+        maximumFractionDigits:2
       }
+    ).format(value);
 
-      function renderTicker() {
+  };
 
-        if (!lastTicker) return;
+  const compact = value => {
 
-        els.livePrice.textContent =
-          money(lastTicker.price);
+    if (
+      value == null ||
+      Number.isNaN(value)
+    ) {
+      return '—';
+    }
 
-        els.high24h.textContent =
-          money(lastTicker.high24h);
-
-        els.low24h.textContent =
-          money(lastTicker.low24h);
-
-        els.volume24h.textContent =
-          lastTicker.volume24h == null
-            ? '—'
-            : `${compact(lastTicker.volume24h)} BTC`;
-
-        if (lastTicker.open24h) {
-
-          const change =
-            (
-              (lastTicker.price - lastTicker.open24h)
-              / lastTicker.open24h
-            ) * 100;
-
-          els.change24h.textContent =
-            `${change >= 0 ? '+' : ''}${change.toFixed(2)}% 24h`;
-
-          els.change24h.className =
-            `change ${change >= 0 ? 'positive' : 'negative'}`;
-
-        }
-
+    return new Intl.NumberFormat(
+      'en-US',
+      {
+        maximumFractionDigits:1
       }
+    ).format(value);
 
-      async function fetchJson(url) {
+  };
 
-        const response = await fetch(
-          url,
-          {
-            headers: {
-              Accept: 'application/json'
-            }
+  function setFeedStatus(status) {
+
+    els.feedStatus.className =
+      `status-pill ${status}`;
+
+    const labels = {
+
+      live:
+        'LIVE FEED',
+
+      connecting:
+        'CONNECTING',
+
+      offline:
+        'OFFLINE'
+
+    };
+
+    els.feedStatus.innerHTML =
+      `<span class="dot"></span> ${labels[status]}`;
+
+  }
+
+  function renderTicker() {
+
+    if (!lastTicker) return;
+
+    els.livePrice.textContent =
+      money(lastTicker.price);
+
+    els.high24h.textContent =
+      money(lastTicker.high24h);
+
+    els.low24h.textContent =
+      money(lastTicker.low24h);
+
+    els.volume24h.textContent =
+      lastTicker.volume24h == null
+        ? '—'
+        : `${compact(lastTicker.volume24h)} BTC`;
+
+    if (lastTicker.open24h) {
+
+      const change =
+        (
+          (
+            lastTicker.price -
+            lastTicker.open24h
+          ) /
+          lastTicker.open24h
+        ) * 100;
+
+      els.change24h.textContent =
+        `${change >= 0 ? '+' : ''}${change.toFixed(2)}% 24h`;
+
+      els.change24h.className =
+        `change ${change >= 0 ? 'positive' : 'negative'}`;
+
+    }
+
+  }
+
+  async function fetchJson(url) {
+
+    const response =
+      await fetch(
+        url,
+        {
+          headers:{
+            Accept:'application/json'
           }
+        }
+      );
+
+    if (!response.ok) {
+
+      throw new Error(
+        `${response.status} ${response.statusText}`
+      );
+
+    }
+
+    return response.json();
+
+  }
+
+  async function loadTickerSnapshot() {
+
+    const [ticker,stats] =
+      await Promise.all([
+        fetchJson(
+          `${REST}/products/BTC-USD/ticker`
+        ),
+        fetchJson(
+          `${REST}/products/BTC-USD/stats`
+        )
+      ]);
+
+    lastTicker = {
+
+      price:
+        Number(ticker.price),
+
+      open24h:
+        Number(stats.open),
+
+      high24h:
+        Number(stats.high),
+
+      low24h:
+        Number(stats.low),
+
+      volume24h:
+        Number(stats.volume),
+
+      time:
+        ticker.time
+
+    };
+
+    renderTicker();
+
+  }
+
+  async function loadCandles() {
+
+    const granularity =
+      granularities[timeframe] || 60;
+
+    els.chartState.textContent =
+      'Loading history…';
+
+    const rows =
+      await fetchJson(
+        `${REST}/products/BTC-USD/candles?granularity=${granularity}`
+      );
+
+    candles =
+      rows
+        .map(
+          ([
+            time,
+            low,
+            high,
+            open,
+            close,
+            volume
+          ]) => ({
+            time,
+            low,
+            high,
+            open,
+            close,
+            volume
+          })
+        )
+        .sort(
+          (a,b) =>
+            a.time - b.time
         );
 
-        if (!response.ok) {
-          throw new Error(
-            `${response.status} ${response.statusText}`
-          );
-        }
+    if (candleSeries) {
 
-        return response.json();
+      candleSeries.setData(
+        candles.map(
+          c => ({
+            time:c.time,
+            open:c.open,
+            high:c.high,
+            low:c.low,
+            close:c.close
+          })
+        )
+      );
+
+      chart
+        .timeScale()
+        .fitContent();
+
+    }
+
+    els.chartState.textContent =
+      `${candles.length} candles`;
+
+  }
+
+  function initChart() {
+
+    if (
+      !window.LightweightCharts ||
+      !els.chart
+    ) {
+
+      els.chartFallback
+        .classList
+        .remove('hidden');
+
+      return;
+
+    }
+
+    const {
+      createChart,
+      CandlestickSeries,
+      ColorType,
+      CrosshairMode
+    } = window.LightweightCharts;
+
+    chart =
+      createChart(
+        els.chart,
+        {
+          width:
+            els.chart.clientWidth,
+
+          height:
+            els.chart.clientHeight,
+
+          layout:{
+            background:{
+              type:
+                ColorType.Solid,
+              color:
+                '#090d14'
+            },
+            textColor:
+              '#7f8da5',
+            fontFamily:
+              'Inter, system-ui, sans-serif'
+          },
+
+          grid:{
+            vertLines:{
+              color:'#111925'
+            },
+            horzLines:{
+              color:'#111925'
+            }
+          },
+
+          rightPriceScale:{
+            borderColor:'#1b2635'
+          },
+
+          timeScale:{
+            borderColor:'#1b2635',
+            timeVisible:true,
+            secondsVisible:false
+          },
+
+          crosshair:{
+            mode:CrosshairMode.Normal
+          }
+        }
+      );
+
+    candleSeries =
+      chart.addSeries(
+        CandlestickSeries,
+        {
+          upColor:'#20d6a3',
+          downColor:'#ff506d',
+          borderUpColor:'#20d6a3',
+          borderDownColor:'#ff506d',
+          wickUpColor:'#20d6a3',
+          wickDownColor:'#ff506d',
+          priceLineVisible:true,
+          lastValueVisible:true
+        }
+      );
+
+    const ro =
+      new ResizeObserver(
+        () =>
+          chart.applyOptions({
+            width:
+              els.chart.clientWidth,
+            height:
+              els.chart.clientHeight
+          })
+      );
+
+    ro.observe(
+      els.chart
+    );
+
+  }
+
+  function updateCurrentCandle(price) {
+
+    if (
+      !candleSeries ||
+      !candles.length
+    ) {
+      return;
+    }
+
+    const last =
+      candles[
+        candles.length - 1
+      ];
+
+    candleSeries.update({
+
+      time:
+        last.time,
+
+      open:
+        last.open,
+
+      high:
+        Math.max(
+          last.high,
+          price
+        ),
+
+      low:
+        Math.min(
+          last.low,
+          price
+        ),
+
+      close:
+        price
+
+    });
+
+  }
+
+  function connectTicker() {
+
+    setFeedStatus(
+      'connecting'
+    );
+
+    const ws =
+      new WebSocket(WS);
+
+    ws.addEventListener(
+      'open',
+      () => {
+
+        ws.send(
+          JSON.stringify({
+            type:'subscribe',
+            product_ids:[
+              'BTC-USD'
+            ],
+            channels:[
+              'ticker'
+            ]
+          })
+        );
+
+        setFeedStatus(
+          'live'
+        );
 
       }
+    );
 
-      async function loadTickerSnapshot() {
+    ws.addEventListener(
+      'message',
+      event => {
 
-        const [ticker, stats] =
-          await Promise.all([
-            fetchJson(
-              `${REST}/products/BTC-USD/ticker`
-            ),
-            fetchJson(
-              `${REST}/products/BTC-USD/stats`
-            )
-          ]);
+        const data =
+          JSON.parse(
+            event.data
+          );
+
+        if (
+          data.type !== 'ticker' ||
+          data.product_id !== 'BTC-USD' ||
+          !data.price
+        ) {
+          return;
+        }
 
         lastTicker = {
 
-          price: Number(ticker.price),
-          open24h: Number(stats.open),
-          high24h: Number(stats.high),
-          low24h: Number(stats.low),
-          volume24h: Number(stats.volume),
-          time: ticker.time
+          price:
+            Number(
+              data.price
+            ),
+
+          open24h:
+            data.open_24h
+              ? Number(
+                  data.open_24h
+                )
+              : lastTicker?.open24h ?? null,
+
+          high24h:
+            data.high_24h
+              ? Number(
+                  data.high_24h
+                )
+              : lastTicker?.high24h ?? null,
+
+          low24h:
+            data.low_24h
+              ? Number(
+                  data.low_24h
+                )
+              : lastTicker?.low24h ?? null,
+
+          volume24h:
+            data.volume_24h
+              ? Number(
+                  data.volume_24h
+                )
+              : lastTicker?.volume24h ?? null,
+
+          time:
+            data.time
 
         };
 
         renderTicker();
 
-      }
-
-      async function loadCandles() {
-
-        const granularity =
-          granularities[timeframe] || 60;
-
-        els.chartState.textContent =
-          'Loading history…';
-
-        const rows =
-          await fetchJson(
-            `${REST}/products/BTC-USD/candles?granularity=${granularity}`
-          );
-
-        candles =
-          rows
-            .map(
-              ([time, low, high, open, close, volume]) =>
-                ({
-                  time,
-                  low,
-                  high,
-                  open,
-                  close,
-                  volume
-                })
-            )
-            .sort(
-              (a, b) =>
-                a.time - b.time
-            );
-
-        if (candleSeries) {
-
-          candleSeries.setData(
-
-            candles.map(
-              (c) => ({
-                time: c.time,
-                open: c.open,
-                high: c.high,
-                low: c.low,
-                close: c.close
-              })
-            )
-
-          );
-
-          chart.timeScale().fitContent();
-
-        }
-
-        els.chartState.textContent =
-          `${candles.length} candles`;
-
-      }
-
-      function initChart() {
-
-        if (
-          !window.LightweightCharts ||
-          !els.chart
-        ) {
-
-          els.chartFallback.classList.remove(
-            'hidden'
-          );
-
-          return;
-
-        }
-
-        const {
-          createChart,
-          CandlestickSeries,
-          ColorType,
-          CrosshairMode
-        } = window.LightweightCharts;
-
-        chart =
-          createChart(
-            els.chart,
-            {
-              width:
-                els.chart.clientWidth,
-
-              height:
-                els.chart.clientHeight,
-
-              layout: {
-                background: {
-                  type: ColorType.Solid,
-                  color: '#090d14'
-                },
-
-                textColor: '#7f8da5',
-
-                fontFamily:
-                  'Inter, system-ui, sans-serif'
-              },
-
-              grid: {
-                vertLines: {
-                  color: '#111925'
-                },
-
-                horzLines: {
-                  color: '#111925'
-                }
-              },
-
-              rightPriceScale: {
-                borderColor: '#1b2635',
-
-                scaleMargins: {
-                  top: 0.08,
-                  bottom: 0.08
-                }
-              },
-
-              timeScale: {
-                borderColor: '#1b2635',
-                timeVisible: true,
-                secondsVisible: false
-              },
-
-              crosshair: {
-                mode: CrosshairMode.Normal
-              }
-            }
-          );
-
-        candleSeries =
-          chart.addSeries(
-            CandlestickSeries,
-            {
-              upColor: '#20d6a3',
-              downColor: '#ff506d',
-              borderUpColor: '#20d6a3',
-              borderDownColor: '#ff506d',
-              wickUpColor: '#20d6a3',
-              wickDownColor: '#ff506d',
-              priceLineVisible: true,
-              lastValueVisible: true
-            }
-          );
-
-        const ro =
-          new ResizeObserver(
-            () =>
-              chart.applyOptions({
-                width:
-                  els.chart.clientWidth,
-
-                height:
-                  els.chart.clientHeight
-              })
-          );
-
-        ro.observe(
-          els.chart
+        updateCurrentCandle(
+          lastTicker.price
         );
 
       }
+    );
 
-      function updateCurrentCandle(price) {
+    ws.addEventListener(
+      'error',
+      () =>
+        setFeedStatus(
+          'offline'
+        )
+    );
 
-        if (
-          !candleSeries ||
-          !candles.length
-        ) return;
-
-        const last =
-          candles[
-            candles.length - 1
-          ];
-
-        candleSeries.update({
-
-          time: last.time,
-
-          open: last.open,
-
-          high:
-            Math.max(
-              last.high,
-              price
-            ),
-
-          low:
-            Math.min(
-              last.low,
-              price
-            ),
-
-          close: price
-
-        });
-
-      }
-
-      function connectTicker() {
+    ws.addEventListener(
+      'close',
+      () => {
 
         setFeedStatus(
-          'connecting'
+          'offline'
         );
 
-        const ws =
-          new WebSocket(WS);
-
-        ws.addEventListener(
-          'open',
-          () => {
-
-            ws.send(
-              JSON.stringify({
-                type: 'subscribe',
-                product_ids: [
-                  'BTC-USD'
-                ],
-                channels: [
-                  'ticker'
-                ]
-              })
-            );
-
-            setFeedStatus(
-              'live'
-            );
-
-          }
-        );
-
-        ws.addEventListener(
-          'message',
-          (event) => {
-
-            const data =
-              JSON.parse(
-                event.data
-              );
-
-            if (
-              data.type !== 'ticker' ||
-              data.product_id !== 'BTC-USD' ||
-              !data.price
-            ) return;
-
-            lastTicker = {
-
-              price:
-                Number(
-                  data.price
-                ),
-
-              open24h:
-                data.open_24h
-                  ? Number(
-                      data.open_24h
-                    )
-                  : lastTicker?.open24h ?? null,
-
-              high24h:
-                data.high_24h
-                  ? Number(
-                      data.high_24h
-                    )
-                  : lastTicker?.high24h ?? null,
-
-              low24h:
-                data.low_24h
-                  ? Number(
-                      data.low_24h
-                    )
-                  : lastTicker?.low24h ?? null,
-
-              volume24h:
-                data.volume_24h
-                  ? Number(
-                      data.volume_24h
-                    )
-                  : lastTicker?.volume24h ?? null,
-
-              time:
-                data.time
-            };
-
-            renderTicker();
-
-            updateCurrentCandle(
-              lastTicker.price
-            );
-
-          }
-        );
-
-        ws.addEventListener(
-          'error',
-          () =>
-            setFeedStatus(
-              'offline'
-            )
-        );
-
-        ws.addEventListener(
-          'close',
-          () => {
-
-            setFeedStatus(
-              'offline'
-            );
-
-            setTimeout(
-              connectTicker,
-              5000
-            );
-
-          }
+        setTimeout(
+          connectTicker,
+          5000
         );
 
       }
+    );
 
-      els.timeframes.addEventListener(
-        'click',
-        async (event) => {
+  }
 
-          const button =
-            event.target.closest(
-              'button[data-tf]'
-            );
+  els.timeframes
+    .addEventListener(
+      'click',
+      async event => {
 
-          if (!button) return;
-
-          timeframe =
-            button.dataset.tf;
-
-          [
-            ...els.timeframes.querySelectorAll(
-              'button'
-            )
-          ].forEach(
-            (btn) =>
-              btn.classList.toggle(
-                'active',
-                btn === button
-              )
+        const button =
+          event.target.closest(
+            'button[data-tf]'
           );
 
-          try {
+        if (!button) return;
 
-            await loadCandles();
+        timeframe =
+          button.dataset.tf;
 
-          } catch (error) {
-
-            els.chartState.textContent =
-              `History error: ${error.message}`;
-
-          }
-
-        }
-      );
-
-      async function boot() {
-
-        initChart();
+        [
+          ...els.timeframes
+            .querySelectorAll(
+              'button'
+            )
+        ].forEach(
+          btn =>
+            btn.classList.toggle(
+              'active',
+              btn === button
+            )
+        );
 
         try {
 
-          await Promise.all([
-            loadTickerSnapshot(),
-            loadCandles()
-          ]);
+          await loadCandles();
 
         } catch (error) {
 
           els.chartState.textContent =
-            `Market data error: ${error.message}`;
+            `History error: ${error.message}`;
 
         }
 
-        connectTicker();
+      }
+    );
+
+  async function boot() {
+
+    initChart();
+
+    try {
+
+      await Promise.all([
+        loadTickerSnapshot(),
+        loadCandles()
+      ]);
+
+    } catch (error) {
+
+      els.chartState.textContent =
+        `Market data error: ${error.message}`;
+
+    }
+
+    connectTicker();
+
+  }
+
+  boot();
+
+})();
+</script>
+
+<script>
+(() => {
+
+  'use strict';
+
+  const STATUS =
+    'https://wzifxrfewalvbswcltlb.supabase.co/functions/v1/btc-ai-status';
+
+  const $ =
+    id =>
+      document.getElementById(id);
+
+  const money =
+    value =>
+      Number.isFinite(Number(value))
+        ? new Intl.NumberFormat(
+            'en-US',
+            {
+              style:'currency',
+              currency:'USD',
+              maximumFractionDigits:2
+            }
+          ).format(
+            Number(value)
+          )
+        : '—';
+
+  const compact =
+    value =>
+      Number.isFinite(Number(value))
+        ? new Intl.NumberFormat(
+            'en-US',
+            {
+              notation:'compact',
+              maximumFractionDigits:1
+            }
+          ).format(
+            Number(value)
+          )
+        : '—';
+
+  const num =
+    (value,digits=2) =>
+      Number.isFinite(Number(value))
+        ? Number(value)
+            .toFixed(digits)
+        : '—';
+
+  const pct =
+    value =>
+      Number.isFinite(Number(value))
+        ? `${Number(value) >= 0 ? '+' : ''}${Number(value).toFixed(2)}%`
+        : '—';
+
+  const when =
+    value =>
+      value
+        ? new Date(value)
+            .toLocaleString(
+              [],
+              {
+                month:'short',
+                day:'numeric',
+                hour:'numeric',
+                minute:'2-digit'
+              }
+            )
+        : '—';
+
+  const ago =
+    seconds => {
+
+      if (
+        seconds == null
+      ) {
+        return '—';
+      }
+
+      if (
+        seconds < 60
+      ) {
+        return `${seconds}s ago`;
+      }
+
+      if (
+        seconds < 3600
+      ) {
+        return `${Math.round(seconds / 60)}m ago`;
+      }
+
+      return `${Math.round(seconds / 3600)}h ago`;
+
+    };
+
+  const esc =
+    value =>
+      String(
+        value ?? '—'
+      )
+        .replace(
+          /[&<>"']/g,
+          char => ({
+            '&':'&amp;',
+            '<':'&lt;',
+            '>':'&gt;',
+            '"':'&quot;',
+            "'":'&#39;'
+          }[char])
+        );
+
+  function statusPill(
+    id,
+    ok,
+    on,
+    off
+  ) {
+
+    const element =
+      $(id);
+
+    if (!element) {
+      return;
+    }
+
+    element.className =
+      `status-pill ${ok ? 'live' : 'offline'}`;
+
+    element.innerHTML =
+      `<span class="dot"></span> ${ok ? on : off}`;
+
+  }
+
+  function render(data) {
+
+    statusPill(
+      'botStatus',
+      data.system.engineOnline,
+      'BOT ONLINE',
+      'BOT OFFLINE'
+    );
+
+    statusPill(
+      'practiceStatus',
+      data.practice.online,
+      'PRACTICING',
+      'PRACTICE OFFLINE'
+    );
+
+    const run =
+      data.recentRuns?.[0] || {};
+
+    const detail =
+      run.details || {};
+
+    const score =
+      Math.max(
+        0,
+        Math.min(
+          100,
+          Number(
+            detail.anomalyScore || 0
+          )
+        )
+      );
+
+    $('scannerTitle').textContent =
+      data.openTrade
+        ? `Managing ${String(data.openTrade.side).toUpperCase()} paper trade`
+        : 'Scanning BTC continuously';
+
+    $('scannerCopy').textContent =
+      data.system.engineOnline
+        ? `Autonomous scan succeeded ${ago(data.system.heartbeatLagSeconds)}. No minimum trade quota exists.`
+        : (
+            data.system.lastError ||
+            'Engine heartbeat is stale.'
+          );
+
+    $('anomalyScore').textContent =
+      `${num(score,0)}/100`;
+
+    $('marketRegime').textContent =
+      String(
+        detail.regime ||
+        'waiting'
+      )
+        .replaceAll(
+          '_',
+          ' '
+        )
+        .toUpperCase();
+
+    $('confidenceGate').textContent =
+      `${num(data.account.minConfidencePct,0)}%`;
+
+    $('scanCycles').textContent =
+      compact(
+        data.system.runsCount
+      );
+
+    $('practiceCycles').textContent =
+      compact(
+        data.practice.sessionsCount
+      );
+
+    $('lastDecision').textContent =
+      String(
+        run.action ||
+        'observing'
+      )
+        .replaceAll(
+          '_',
+          ' '
+        )
+        .toUpperCase();
+
+    $('paperEquity').textContent =
+      money(
+        data.account.equity
+      );
+
+    $('paperEquitySub').textContent =
+      `Today ${money(data.account.dayPnl)} (${pct(data.account.dayReturnPct)}) • fees ${data.account.feeBps} bps + ${data.account.slippageBps} bps slip assumption`;
+
+    $('practiceCandles').textContent =
+      compact(
+        data.practice.candlesProcessed
+      );
+
+    $('practiceSetups').textContent =
+      compact(
+        data.practice.setupsTested
+      );
+
+    $('practiceSessions').textContent =
+      compact(
+        data.practice.sessionsCount
+      );
+
+    $('totalPaperPnl').textContent =
+      money(
+        data.account.totalPnl
+      );
+
+    $('totalPaperPnl').className =
+      `value ${
+        data.account.totalPnl >= 0
+          ? 'positive-text'
+          : 'negative-text'
+      }`;
+
+    const signal =
+      data.recentSignals?.[0];
+
+    $('setupModule').innerHTML =
+      signal
+        ? `
+          <div class="module-kicker">
+            LATEST SETUP DECISION
+          </div>
+
+          <h3>
+            ${esc(signal.side.toUpperCase())}
+            •
+            ${esc(signal.strategy.replaceAll('_',' '))}
+          </h3>
+
+          <p>
+            ${num(Number(signal.confidence) * 100,1)}% confidence
+            •
+            ${esc(signal.regime.replaceAll('_',' '))}
+            <br>
+            ${esc(signal.status)}
+            ${
+              signal.rejection_reason
+                ? ' • ' +
+                  esc(
+                    signal.rejection_reason
+                      .replaceAll('_',' ')
+                  )
+                : ''
+            }
+            <br>
+            ${esc(signal.reason)}
+          </p>
+        `
+        : `
+          <div class="module-kicker">
+            SETUP QUEUE
+          </div>
+
+          <h3>
+            Scanning continuously
+          </h3>
+
+          <p>
+            No qualifying setup has been detected yet.
+            Doing nothing is a valid decision.
+          </p>
+        `;
+
+    const trade =
+      data.openTrade ||
+      (
+        data.recentTrades?.[0] ||
+        null
+      );
+
+    $('tradeModule').innerHTML =
+      trade
+        ? `
+          <div class="module-kicker">
+            ${
+              trade.status === 'open'
+                ? 'OPEN PAPER TRADE'
+                : 'LATEST PAPER TRADE'
+            }
+          </div>
+
+          <h3 class="${
+            trade.side === 'long'
+              ? 'positive-text'
+              : 'negative-text'
+          }">
+            ${esc(trade.side.toUpperCase())}
+            •
+            ${esc(trade.strategy.replaceAll('_',' '))}
+          </h3>
+
+          <p>
+            Entry ${money(trade.entry_price)}
+            ${
+              trade.status === 'open'
+                ? `
+                  <br>
+                  Stop ${money(trade.stop_price)}
+                  •
+                  Target ${money(trade.target_price)}
+                  <br>
+                  Risk ${money(trade.risk_amount)}
+                `
+                : `
+                  <br>
+                  ${esc(trade.outcome || 'closed')}
+                  •
+                  ${money(trade.realized_pnl)}
+                  •
+                  ${num(trade.r_multiple,2)}R
+                `
+            }
+          </p>
+        `
+        : `
+          <div class="module-kicker">
+            PAPER TRADES
+          </div>
+
+          <h3>
+            No simulated position
+          </h3>
+
+          <p>
+            The bot has not found a setup that clears its confidence and risk gates yet.
+          </p>
+        `;
+
+    const learning =
+      data.learningLog?.[0];
+
+    $('learningModule').innerHTML =
+      learning
+        ? `
+          <div class="module-kicker">
+            LATEST LEARNING EVENT
+          </div>
+
+          <h3>
+            ${esc(
+              learning.event_type
+                .replaceAll('_',' ')
+            )}
+          </h3>
+
+          <p>
+            ${when(learning.created_at)}
+            <br>
+            ${
+              learning.strategy
+                ? esc(
+                    learning.strategy
+                      .replaceAll('_',' ')
+                  )
+                : 'System evidence recorded.'
+            }
+          </p>
+        `
+        : `
+          <div class="module-kicker">
+            LEARNING LOG
+          </div>
+
+          <h3>
+            Learning engine active
+          </h3>
+
+          <p>
+            Waiting for a reviewed trade, skipped setup, or historical replay session.
+          </p>
+        `;
+
+    $('strategyStats').innerHTML =
+      (
+        data.strategies || []
+      )
+        .map(
+          strategy => `
+            <div class="strategy-item">
+
+              <div class="strategy-name">
+
+                <span>
+                  ${esc(
+                    strategy.strategy
+                      .replaceAll('_',' ')
+                      .toUpperCase()
+                  )}
+                </span>
+
+                <span class="${
+                  strategy.state === 'paper_validated'
+                    ? 'positive-text'
+                    : 'warning-text'
+                }">
+                  ${esc(
+                    strategy.state
+                      .replaceAll('_',' ')
+                      .toUpperCase()
+                  )}
+                </span>
+
+              </div>
+
+              <div class="strategy-meta">
+                Forward trades:
+                ${strategy.trades}
+                •
+                posterior win probability:
+                ${num(Number(strategy.posteriorWinRate) * 100,1)}%
+                •
+                avg R:
+                ${num(strategy.avg_r,2)}
+                •
+                counterfactual reviews:
+                ${strategy.cf_signals}
+              </div>
+
+            </div>
+          `
+        )
+        .join('')
+      ||
+      `
+        <div class="micro-note">
+          No strategy statistics yet.
+        </div>
+      `;
+
+    $('learningFeed').innerHTML =
+      (
+        data.learningLog || []
+      )
+        .slice(
+          0,
+          6
+        )
+        .map(
+          event => {
+
+            const lesson =
+              event.lesson || {};
+
+            let text =
+              'Evidence recorded.';
+
+            if (
+              event.event_type ===
+              'historical_practice_session'
+            ) {
+
+              text =
+                `Replayed ${lesson.candles || 0} candles and tested ${lesson.setupsTested || 0} setups; average ${num(lesson.avgR,2)}R.`;
+
+            }
+
+            if (
+              event.event_type ===
+              'paper_trade_review'
+            ) {
+
+              text =
+                `${lesson.outcome || 'Trade'}: ${num(lesson.rMultiple,2)}R, ${money(lesson.netPnl)}; exit ${String(lesson.exitReason || '—').replaceAll('_',' ')}.`;
+
+            }
+
+            if (
+              event.event_type ===
+              'counterfactual_review'
+            ) {
+
+              text =
+                `Skipped setup later produced ${lesson.hypotheticalOutcome || '—'} / ${num(lesson.hypotheticalR,2)}R.`;
+
+            }
+
+            if (
+              event.event_type ===
+              'paper_trade_opened'
+            ) {
+
+              text =
+                `Paper position opened with ${num(Number(lesson.confidence) * 100,1)}% confidence and ${money(lesson.riskAmount)} simulated risk.`;
+
+            }
+
+            return `
+              <div class="learning-event">
+
+                <strong>
+                  ${esc(
+                    event.event_type
+                      .replaceAll('_',' ')
+                      .toUpperCase()
+                  )}
+                  •
+                  ${when(event.created_at)}
+                </strong>
+
+                <p>
+                  ${esc(text)}
+                </p>
+
+              </div>
+            `;
+
+          }
+        )
+        .join('')
+      ||
+      `
+        <div class="micro-note">
+          Waiting for reviewed evidence…
+        </div>
+      `;
+
+  }
+
+  async function poll() {
+
+    try {
+
+      const response =
+        await fetch(
+          `${STATUS}?t=${Date.now()}`,
+          {
+            cache:'no-store'
+          }
+        );
+
+      if (!response.ok) {
+
+        throw new Error(
+          `HTTP ${response.status}`
+        );
 
       }
 
-      boot();
+      const data =
+        await response.json();
 
-    })();
-  </script>
+      render(data);
+
+    } catch (error) {
+
+      statusPill(
+        'botStatus',
+        false,
+        'BOT ONLINE',
+        'STATUS ERROR'
+      );
+
+      if (
+        $('scannerCopy')
+      ) {
+
+        $('scannerCopy').textContent =
+          `Dashboard could not read the bot status: ${error.message}. The backend may still be running.`;
+
+      }
+
+    }
+
+  }
+
+  poll();
+
+  setInterval(
+    poll,
+    10000
+  );
+
+})();
+</script>
 
 </body>
 </html>
