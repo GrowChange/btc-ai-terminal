@@ -1,763 +1,663 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#05070b" />
-  <meta name="description" content="BTC AI paper-trading research terminal" />
-  <title>BTC AI Terminal</title>
-  <link rel="preconnect" href="https://unpkg.com" />
-
-  <style>
-    :root{
-      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      color:#dce7f7;
-      background:#05070b;
-      --panel:#090d14;
-      --border:#182230;
-      --muted:#6e7c91;
-      --cyan:#4dc7ff;
-      --green:#20d6a3;
-      --red:#ff506d;
-      --amber:#f5b742
-    }
-
-    *{box-sizing:border-box}
-
-    body{
-      margin:0;
-      min-width:320px;
-      min-height:100vh;
-      background:#05070b
-    }
-
-    button{font:inherit}
-
-    body:before{
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      opacity:.3;
-      background-image:
-        linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
-      background-size:36px 36px;
-      mask-image:linear-gradient(to bottom,rgba(0,0,0,.85),transparent 72%)
-    }
-
-    .app-shell{min-height:100vh}
-
-    .topbar{
-      min-height:72px;
-      padding:12px 18px;
-      border-bottom:1px solid var(--border);
-      background:rgba(5,7,11,.92);
-      backdrop-filter:blur(16px);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:14px;
-      position:sticky;
-      top:0;
-      z-index:20
-    }
-
-    .brand-block{
-      display:flex;
-      align-items:center;
-      gap:12px
-    }
-
-    .brand-mark{
-      width:42px;
-      height:42px;
-      border:1px solid #23425a;
-      border-radius:9px;
-      display:grid;
-      place-items:center;
-      color:var(--cyan);
-      font-size:11px;
-      font-weight:900;
-      letter-spacing:.08em;
-      background:linear-gradient(135deg,#0c1822,#080b10);
-      box-shadow:inset 0 0 22px rgba(77,199,255,.06),0 0 24px rgba(77,199,255,.04)
-    }
-
-    .eyebrow{
-      color:#5e7691;
-      font-size:10px;
-      letter-spacing:.18em;
-      font-weight:800
-    }
-
-    .brand-title{
-      font-size:16px;
-      font-weight:800;
-      margin-top:3px
-    }
-
-    .brand-title span{
-      font-size:10px;
-      color:#53657b;
-      margin-left:5px
-    }
-
-    .topbar-statuses{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      justify-content:flex-end
-    }
-
-    .status-pill{
-      height:28px;
-      padding:0 9px;
-      display:flex;
-      align-items:center;
-      gap:6px;
-      border:1px solid var(--border);
-      border-radius:6px;
-      font-size:9px;
-      letter-spacing:.08em;
-      font-weight:800;
-      color:#8190a4;
-      background:#090d14
-    }
-
-    .status-pill .dot{
-      width:6px;
-      height:6px;
-      border-radius:50%;
-      background:currentColor;
-      box-shadow:0 0 10px currentColor
-    }
-
-    .status-pill.live{
-      color:var(--green);
-      border-color:rgba(32,214,163,.28);
-      background:rgba(32,214,163,.05)
-    }
-
-    .status-pill.connecting{color:var(--amber)}
-    .status-pill.offline{color:var(--red)}
-
-    .status-pill.paper{
-      color:#9dc6ff;
-      border-color:rgba(77,199,255,.22)
-    }
-
-    .status-pill.locked{color:#77859a}
-
-    .terminal-grid{
-      max-width:1800px;
-      margin:0 auto;
-      padding:14px;
-      display:grid;
-      grid-template-columns:minmax(0,1fr) 340px;
-      grid-template-areas:
-        "market intel"
-        "metrics metrics"
-        "bottom bottom"
-        "research research";
-      gap:12px
-    }
-
-    .panel{
-      background:var(--panel);
-      border:1px solid var(--border);
-      border-radius:9px;
-      overflow:hidden;
-      box-shadow:0 12px 40px rgba(0,0,0,.16)
-    }
-
-    .market-panel{grid-area:market;min-width:0}
-    .intel-panel{grid-area:intel}
-
-    .metrics-row{
-      grid-area:metrics;
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:12px
-    }
-
-    .bottom-panel{grid-area:bottom}
-
-    .market-header{
-      min-height:88px;
-      padding:16px 18px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      border-bottom:1px solid var(--border)
-    }
-
-    .pair-row{
-      display:flex;
-      align-items:center;
-      gap:11px
-    }
-
-    .btc-coin{
-      width:38px;
-      height:38px;
-      border-radius:50%;
-      background:#f5a623;
-      color:#080808;
-      font-weight:900;
-      display:grid;
-      place-items:center;
-      font-size:21px
-    }
-
-    .pair-row h1{
-      margin:0;
-      font-size:18px
-    }
-
-    .pair-row span{
-      color:var(--muted);
-      font-size:11px
-    }
-
-    .price-block{text-align:right}
-
-    .live-price{
-      font-size:26px;
-      font-weight:760
-    }
-
-    .change{
-      margin-top:4px;
-      font-size:11px;
-      font-weight:800
-    }
-
-    .change.positive{color:var(--green)}
-    .change.negative{color:var(--red)}
-    .change.neutral{color:var(--muted)}
-
-    .chart-toolbar{
-      height:42px;
-      border-bottom:1px solid var(--border);
-      display:flex;
-      align-items:center;
-      padding:0 12px;
-      gap:14px;
-      background:#080c12
-    }
-
-    .toolbar-label{
-      color:#7d8ca1;
-      font-size:10px;
-      font-weight:800
-    }
-
-    .timeframes{
-      display:flex;
-      gap:3px
-    }
-
-    .timeframes button{
-      border:1px solid transparent;
-      color:#69798d;
-      background:transparent;
-      padding:4px 7px;
-      border-radius:4px;
-      font-size:10px;
-      font-weight:800;
-      cursor:pointer
-    }
-
-    .timeframes button.active{
-      color:var(--cyan);
-      background:rgba(77,199,255,.08);
-      border-color:rgba(77,199,255,.18)
-    }
-
-    .toolbar-right{
-      margin-left:auto;
-      color:#58677b;
-      font-size:9px
-    }
-
-    .chart-wrap{
-      position:relative;
-      height:570px;
-      background:#090d14
-    }
-
-    .chart-host{
-      width:100%;
-      height:100%
-    }
-
-    .chart-watermark{
-      position:absolute;
-      left:18px;
-      bottom:14px;
-      color:rgba(106,128,153,.20);
-      font-size:10px;
-      letter-spacing:.16em;
-      font-weight:800;
-      pointer-events:none
-    }
-
-    .chart-fallback{
-      position:absolute;
-      inset:0;
-      display:grid;
-      place-items:center;
-      color:#7d8ca1;
-      font-size:12px
-    }
-
-    .hidden{display:none}
-
-    .panel-heading{
-      height:46px;
-      padding:0 14px;
-      border-bottom:1px solid var(--border);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      color:#a2b3c9;
-      font-size:10px;
-      font-weight:850;
-      letter-spacing:.08em
-    }
-
-    .panel-heading>span{
-      color:#586a80;
-      font-size:9px
-    }
-
-    .phase-badge{
-      color:var(--cyan)!important;
-      border:1px solid rgba(77,199,255,.2);
-      padding:3px 6px;
-      border-radius:4px;
-      background:rgba(77,199,255,.05)
-    }
-
-    .scanner-state{
-      padding:18px 14px;
-      display:grid;
-      grid-template-columns:56px 1fr;
-      gap:13px;
-      border-bottom:1px solid var(--border);
-      align-items:center
-    }
-
-    .scanner-ring{
-      width:54px;
-      height:54px;
-      border-radius:50%;
-      border:1px solid #1e4154;
-      display:grid;
-      place-items:center;
-      position:relative
-    }
-
-    .scanner-ring:before{
-      content:"";
-      position:absolute;
-      inset:5px;
-      border:1px dashed rgba(77,199,255,.28);
-      border-radius:50%;
-      animation:spin 7s linear infinite
-    }
-
-    .scanner-core{
-      width:9px;
-      height:9px;
-      border-radius:50%;
-      background:var(--cyan);
-      box-shadow:0 0 14px rgba(77,199,255,.7)
-    }
-
-    @keyframes spin{
-      to{transform:rotate(360deg)}
-    }
-
-    .scanner-title{
-      color:#c4d3e7;
-      font-size:13px;
-      font-weight:750
-    }
-
-    .scanner-state p{
-      margin:5px 0 0;
-      color:#67778c;
-      font-size:10px;
-      line-height:1.55
-    }
-
-    .intel-list{padding:8px 12px}
-
-    .intel-row{
-      min-height:41px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      border-bottom:1px solid #111923;
-      font-size:10px;
-      color:#7f8fa4
-    }
-
-    .intel-row strong{
-      font-size:9px;
-      letter-spacing:.06em
-    }
-
-    .doctrine-card{
-      margin:12px;
-      padding:13px;
-      background:linear-gradient(135deg,rgba(77,199,255,.06),rgba(32,214,163,.025));
-      border:1px solid #1b2937;
-      border-radius:7px
-    }
-
-    .doctrine-card span{
-      font-size:8px;
-      letter-spacing:.12em;
-      color:#587087;
-      font-weight:900
-    }
-
-    .doctrine-card strong{
-      display:block;
-      margin-top:6px;
-      font-size:12px;
-      color:#b7c9df
-    }
-
-    .doctrine-card p{
-      margin:5px 0 0;
-      font-size:9px;
-      color:#68788d;
-      line-height:1.5
-    }
-
-    .metric-card{
-      min-height:106px;
-      padding:14px;
-      background:var(--panel);
-      border:1px solid var(--border);
-      border-radius:9px
-    }
-
-    .metric-top{
-      color:#617087;
-      font-size:9px;
-      font-weight:850;
-      letter-spacing:.08em
-    }
-
-    .metric-value{
-      margin-top:14px;
-      font-size:18px;
-      font-weight:760;
-      color:#c8d6e8
-    }
-
-    .metric-sub{
-      margin-top:5px;
-      color:#5d6c80;
-      font-size:9px
-    }
-
-    .empty-grid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:1px;
-      background:var(--border)
-    }
-
-    .empty-module{
-      min-height:150px;
-      padding:17px;
-      background:var(--panel)
-    }
-
-    .module-kicker{
-      color:#526579;
-      font-size:8px;
-      letter-spacing:.12em;
-      font-weight:900
-    }
-
-    .empty-module h3{
-      margin:17px 0 6px;
-      font-size:13px;
-      color:#a9bad0
-    }
-
-    .empty-module p{
-      margin:0;
-      color:#617085;
-      font-size:10px;
-      line-height:1.55
-    }
-
-    .bot-research{
-      grid-area:research;
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px
-    }
-
-    .research-card{
-      background:var(--panel);
-      border:1px solid var(--border);
-      border-radius:9px;
-      overflow:hidden
-    }
-
-    .research-body{padding:12px}
-
-    .research-grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:8px
-    }
-
-    .stat-box{
-      border:1px solid var(--border);
-      background:#080c12;
-      border-radius:6px;
-      padding:10px
-    }
-
-    .stat-box .label{
-      font-size:8px;
-      color:#5f7085;
-      letter-spacing:.08em;
-      font-weight:850
-    }
-
-    .stat-box .value{
-      font-size:15px;
-      color:#bfd0e3;
-      font-weight:800;
-      margin-top:5px
-    }
-
-    .strategy-item{
-      padding:10px 0;
-      border-top:1px solid #111923
-    }
-
-    .strategy-item:first-child{
-      border-top:0
-    }
-
-    .strategy-name{
-      display:flex;
-      justify-content:space-between;
-      gap:8px;
-      font-size:9px;
-      color:#aebfd3;
-      font-weight:800
-    }
-
-    .strategy-meta{
-      margin-top:5px;
-      color:#65768a;
-      font-size:8px;
-      line-height:1.55
-    }
-
-    .learning-event{
-      padding:9px 0;
-      border-top:1px solid #111923
-    }
-
-    .learning-event:first-child{
-      border-top:0
-    }
-
-    .learning-event strong{
-      font-size:8px;
-      color:#aebfd3
-    }
-
-    .learning-event p{
-      font-size:8px;
-      color:#66778b;
-      line-height:1.45;
-      margin:4px 0 0
-    }
-
-    .positive-text{color:var(--green)!important}
-    .negative-text{color:var(--red)!important}
-    .warning-text{color:var(--amber)!important}
-
-    .micro-note{
-      font-size:8px;
-      color:#526378;
-      line-height:1.45;
-      margin-top:9px
-    }
-
-    @media(max-width:1040px){
-      .terminal-grid{
-        grid-template-columns:1fr;
-        grid-template-areas:
-          "market"
-          "intel"
-          "metrics"
-          "bottom"
-          "research"
-      }
-
-      .metrics-row{
-        grid-template-columns:repeat(2,1fr)
-      }
-
-      .bot-research{
-        grid-template-columns:1fr
-      }
-
-      .chart-wrap{
-        height:500px
-      }
-    }
-
-    @media(max-width:680px){
-      .topbar{
-        position:static;
-        align-items:flex-start
-      }
-
-      .topbar-statuses{
-        max-width:170px
-      }
-
-      .status-pill.locked{
-        display:none
-      }
-
-      .terminal-grid{
-        padding:8px;
-        gap:8px
-      }
-
-      .market-header{
-        padding:13px;
-        align-items:flex-start
-      }
-
-      .live-price{
-        font-size:20px
-      }
-
-      .pair-row h1{
-        font-size:15px
-      }
-
-      .chart-toolbar{
-        overflow-x:auto
-      }
-
-      .toolbar-right{
-        display:none
-      }
-
-      .chart-wrap{
-        height:460px
-      }
-
-      .metrics-row{
-        grid-template-columns:1fr 1fr;
-        gap:8px
-      }
-
-      .research-grid{
-        grid-template-columns:1fr 1fr
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#05070b" />
+<title>BTC AI Terminal</title>
+
+<style>
+
+:root{
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:#dce7f7;
+  background:#05070b;
+  --panel:#090d14;
+  --panel2:#0c121b;
+  --border:#192534;
+  --muted:#68798f;
+  --cyan:#4dc7ff;
+  --green:#21d6a3;
+  --red:#ff526f;
+  --amber:#f4b84a
+}
+
+*{
+  box-sizing:border-box
+}
+
+body{
+  margin:0;
+  background:#05070b;
+  min-width:320px
+}
+
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:.25;
+  background-image:
+    linear-gradient(rgba(255,255,255,.014) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.014) 1px,transparent 1px);
+  background-size:32px 32px
+}
+
+.top{
+  position:sticky;
+  top:0;
+  z-index:10;
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  padding:12px 16px;
+  background:rgba(5,7,11,.94);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border)
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px
+}
+
+.logo{
+  width:40px;
+  height:40px;
+  border:1px solid #244259;
+  border-radius:9px;
+  display:grid;
+  place-items:center;
+  color:var(--cyan);
+  font-size:11px;
+  font-weight:900;
+  background:#08121a
+}
+
+.kicker{
+  font-size:9px;
+  letter-spacing:.16em;
+  color:#58728c;
+  font-weight:900
+}
+
+.title{
+  font-size:16px;
+  font-weight:850;
+  margin-top:3px
+}
+
+.title small{
+  font-size:9px;
+  color:#65768a;
+  margin-left:5px
+}
+
+.pills{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  justify-content:flex-end
+}
+
+.pill{
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:6px 8px;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.06em;
+  color:#8493a8;
+  background:#080c12;
+  white-space:nowrap
+}
+
+.pill:before{
+  content:"";
+  display:inline-block;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:currentColor;
+  margin-right:5px;
+  box-shadow:0 0 9px currentColor
+}
+
+.live{
+  color:var(--green);
+  border-color:rgba(33,214,163,.28)
+}
+
+.warn{
+  color:var(--amber)
+}
+
+.dead{
+  color:var(--red)
+}
+
+.paper{
+  color:#9bc8ff
+}
+
+.wrap{
+  max-width:1800px;
+  margin:auto;
+  padding:12px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 360px;
+  gap:12px
+}
+
+.panel{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:9px;
+  overflow:hidden
+}
+
+.head{
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 13px;
+  border-bottom:1px solid var(--border);
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.1em;
+  color:#9fb1c8
+}
+
+.head span{
+  color:#5c6d81;
+  font-size:8px
+}
+
+.marketTop{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px;
+  border-bottom:1px solid var(--border)
+}
+
+.pair{
+  display:flex;
+  align-items:center;
+  gap:10px
+}
+
+.btc{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#f5a623;
+  color:#090909;
+  font-size:20px;
+  font-weight:900
+}
+
+.pair strong{
+  display:block;
+  font-size:16px
+}
+
+.pair small{
+  color:var(--muted)
+}
+
+.price{
+  text-align:right;
+  font-size:24px;
+  font-weight:850
+}
+
+.chg{
+  font-size:10px;
+  margin-top:4px
+}
+
+.pos{
+  color:var(--green)!important
+}
+
+.neg{
+  color:var(--red)!important
+}
+
+.amber{
+  color:var(--amber)!important
+}
+
+.toolbar{
+  height:40px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  border-bottom:1px solid var(--border);
+  overflow-x:auto
+}
+
+.toolbar button{
+  border:1px solid transparent;
+  background:transparent;
+  color:#708198;
+  border-radius:4px;
+  padding:4px 7px;
+  font-size:9px;
+  font-weight:850
+}
+
+.toolbar button.on{
+  color:var(--cyan);
+  border-color:rgba(77,199,255,.2);
+  background:rgba(77,199,255,.06)
+}
+
+#chart{
+  height:520px
+}
+
+.intel{
+  padding:12px
+}
+
+.radar{
+  display:grid;
+  grid-template-columns:58px 1fr;
+  gap:12px;
+  align-items:center;
+  padding-bottom:12px;
+  border-bottom:1px solid #121b26
+}
+
+.ring{
+  width:56px;
+  height:56px;
+  border:1px solid #24445b;
+  border-radius:50%;
+  position:relative;
+  display:grid;
+  place-items:center
+}
+
+.ring:before{
+  content:"";
+  position:absolute;
+  inset:6px;
+  border-radius:50%;
+  border:1px dashed rgba(77,199,255,.35);
+  animation:spin 5s linear infinite
+}
+
+.core{
+  width:8px;
+  height:8px;
+  background:var(--cyan);
+  border-radius:50%;
+  box-shadow:0 0 14px var(--cyan)
+}
+
+@keyframes spin{
+  to{
+    transform:rotate(360deg)
+  }
+}
+
+.radar strong{
+  font-size:12px
+}
+
+.radar p{
+  font-size:9px;
+  line-height:1.45;
+  color:#64758a;
+  margin:5px 0 0
+}
+
+.rows{
+  margin-top:6px
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:9px 0;
+  border-bottom:1px solid #121b26;
+  font-size:9px;
+  color:#7a8ba1
+}
+
+.row b{
+  color:#b9c9db
+}
+
+.doctrine{
+  margin-top:12px;
+  border:1px solid #1b2a39;
+  background:linear-gradient(
+    135deg,
+    rgba(77,199,255,.06),
+    rgba(33,214,163,.025)
+  );
+  border-radius:7px;
+  padding:11px;
+  font-size:9px;
+  color:#68798d;
+  line-height:1.45
+}
+
+.doctrine b{
+  display:block;
+  color:#b8c9dc;
+  margin-bottom:4px
+}
+
+.metrics{
+  grid-column:1/-1;
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  gap:8px
+}
+
+.metric{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:11px;
+  min-height:88px
+}
+
+.mlabel{
+  font-size:8px;
+  color:#617289;
+  font-weight:900;
+  letter-spacing:.08em
+}
+
+.mvalue{
+  font-size:16px;
+  font-weight:850;
+  margin-top:12px;
+  color:#c6d4e5
+}
+
+.msub{
+  font-size:8px;
+  color:#5c6d81;
+  margin-top:5px;
+  line-height:1.35
+}
+
+.full{
+  grid-column:1/-1
+}
+
+.two{
+  grid-column:1/-1;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px
+}
+
+.microgrid{
+  padding:12px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px
+}
+
+.box{
+  border:1px solid var(--border);
+  border-radius:6px;
+  background:#080c12;
+  padding:10px
+}
+
+.box small{
+  font-size:7px;
+  letter-spacing:.08em;
+  color:#5e7085;
+  font-weight:900
+}
+
+.box b{
+  display:block;
+  font-size:14px;
+  margin-top:6px;
+  color:#c3d2e3
+}
+
+.box em{
+  display:block;
+  font-style:normal;
+  font-size:7px;
+  color:#5e7085;
+  margin-top:3px
+}
+
+.body{
+  padding:12px
+}
+
+.item{
+  padding:9px 0;
+  border-bottom:1px solid #121b26
+}
+
+.item:last-child{
+  border-bottom:0
+}
+
+.itemTop{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  font-size:9px;
+  font-weight:850;
+  color:#a9bbcf
+}
+
+.item p{
+  font-size:8px;
+  line-height:1.45;
+  color:#65778d;
+  margin:5px 0 0
+}
+
+.tag{
+  border:1px solid #243447;
+  border-radius:4px;
+  padding:2px 5px;
+  font-size:7px;
+  color:#7f90a5
+}
+
+.table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:8px
+}
+
+.table th,
+.table td{
+  text-align:left;
+  padding:8px 6px;
+  border-bottom:1px solid #121b26
+}
+
+.table th{
+  color:#5f7085;
+  font-weight:900
+}
+
+.table td{
+  color:#9eb0c5
+}
+
+.empty{
+  font-size:9px;
+  color:#65768b;
+  padding:12px 0
+}
+
+.note{
+  font-size:8px;
+  color:#5c6d80;
+  line-height:1.45;
+  margin-top:8px
+}
+
+@media(max-width:1100px){
+
+  .wrap{
+    grid-template-columns:1fr
+  }
+
+  .metrics{
+    grid-template-columns:repeat(4,1fr)
+  }
+
+  .two{
+    grid-template-columns:1fr
+  }
+
+  .microgrid{
+    grid-template-columns:repeat(4,1fr)
+  }
+
+}
+
+@media(max-width:680px){
+
+  .top{
+    position:static;
+    align-items:flex-start
+  }
+
+  .pills{
+    max-width:155px
+  }
+
+  .wrap{
+    padding:7px;
+    gap:7px
+  }
+
+  .metrics{
+    grid-template-columns:repeat(2,1fr)
+  }
+
+  .microgrid{
+    grid-template-columns:repeat(2,1fr)
+  }
+
+  #chart{
+    height:410px
+  }
+
+  .price{
+    font-size:19px
+  }
+
+  .title{
+    font-size:14px
+  }
+
+  .pill:nth-child(5){
+    display:none
+  }
+
+}
+
+</style>
 </head>
 
 <body>
 
-<div class="app-shell">
+<header class="top">
 
-<header class="topbar">
+  <div class="brand">
 
-  <div class="brand-block">
-
-    <div class="brand-mark">AI</div>
+    <div class="logo">
+      AI
+    </div>
 
     <div>
-      <div class="eyebrow">
+
+      <div class="kicker">
         BITCOIN INTELLIGENCE SYSTEM
       </div>
 
-      <div class="brand-title">
+      <div class="title">
         BTC AI Terminal
-        <span>v0.2 • AUTONOMOUS PAPER ENGINE</span>
+        <small>v0.3 • DUAL-HORIZON</small>
       </div>
+
     </div>
 
   </div>
 
-  <div class="topbar-statuses">
+  <div class="pills">
 
-    <div id="feedStatus" class="status-pill connecting">
-      <span class="dot"></span>
+    <div id="feedPill" class="pill warn">
       MARKET FEED
     </div>
 
-    <div id="botStatus" class="status-pill connecting">
-      <span class="dot"></span>
-      BOT CHECK
+    <div id="corePill" class="pill warn">
+      CORE ENGINE
     </div>
 
-    <div id="practiceStatus" class="status-pill connecting">
-      <span class="dot"></span>
-      PRACTICE CHECK
+    <div id="microPill" class="pill warn">
+      1S INTELLIGENCE
     </div>
 
-    <div class="status-pill paper">
+    <div id="practicePill" class="pill warn">
+      PRACTICE
+    </div>
+
+    <div class="pill paper">
       PAPER ONLY
-    </div>
-
-    <div class="status-pill locked">
-      LIVE EXECUTION LOCKED
     </div>
 
   </div>
 
 </header>
 
-<main class="terminal-grid">
+<main class="wrap">
 
-<section class="market-panel panel">
+<section class="panel">
 
-  <div class="market-header">
+  <div class="marketTop">
 
-    <div class="pair-row">
+    <div class="pair">
 
-      <div class="btc-coin">
+      <div class="btc">
         ₿
       </div>
 
       <div>
-        <h1>BTC / USD</h1>
-        <span>Coinbase public market data</span>
+        <strong>BTC / USD</strong>
+        <small>Coinbase public market data</small>
       </div>
 
     </div>
 
-    <div class="price-block">
+    <div>
 
-      <div id="livePrice" class="live-price">
+      <div id="livePrice" class="price">
         —
       </div>
 
-      <div id="change24h" class="change neutral">
+      <div id="change24" class="chg">
         —
       </div>
 
@@ -765,265 +665,395 @@
 
   </div>
 
-  <div class="chart-toolbar">
+  <div class="toolbar">
 
-    <div class="toolbar-label">
-      PRICE
-    </div>
+    <button data-tf="1m" class="on">
+      1m
+    </button>
 
-    <div id="timeframes" class="timeframes">
+    <button data-tf="5m">
+      5m
+    </button>
 
-      <button data-tf="1m" class="active">
-        1m
-      </button>
+    <button data-tf="15m">
+      15m
+    </button>
 
-      <button data-tf="5m">
-        5m
-      </button>
+    <button data-tf="1h">
+      1h
+    </button>
 
-      <button data-tf="15m">
-        15m
-      </button>
+    <button data-tf="6h">
+      6h
+    </button>
 
-      <button data-tf="1h">
-        1h
-      </button>
+    <button data-tf="1d">
+      1d
+    </button>
 
-      <button data-tf="6h">
-        6h
-      </button>
-
-      <button data-tf="1d">
-        1d
-      </button>
-
-    </div>
-
-    <div id="chartState" class="toolbar-right">
-      Loading history…
-    </div>
+    <span
+      id="chartState"
+      style="margin-left:auto;font-size:8px;color:#586a80"
+    >
+      loading…
+    </span>
 
   </div>
 
-  <div class="chart-wrap">
-
-    <div id="chart" class="chart-host"></div>
-
-    <div id="chartFallback" class="chart-fallback hidden">
-      Chart library could not load.
-    </div>
-
-    <div class="chart-watermark">
-      BTC AI / PAPER RESEARCH
-    </div>
-
-  </div>
+  <div id="chart"></div>
 
 </section>
 
-<aside class="intel-panel panel">
+<aside class="panel">
 
-  <div class="panel-heading">
-
-    <div>
-      AI INTELLIGENCE
-    </div>
-
-    <span class="phase-badge">
-      PHASE 1
-    </span>
-
+  <div class="head">
+    AI INTELLIGENCE
+    <span>LIVE RESEARCH</span>
   </div>
 
-  <div class="scanner-state">
+  <div class="intel">
 
-    <div class="scanner-ring">
-      <div class="scanner-core"></div>
-    </div>
+    <div class="radar">
 
-    <div>
-
-      <div id="scannerTitle" class="scanner-title">
-        Connecting to autonomous engine
+      <div class="ring">
+        <div class="core"></div>
       </div>
 
-      <p id="scannerCopy">
-        The bot runs independently of this page.
-      </p>
+      <div>
+
+        <strong id="scanTitle">
+          Connecting to engines
+        </strong>
+
+        <p id="scanCopy">
+          Waiting for backend status.
+        </p>
+
+      </div>
 
     </div>
 
-  </div>
+    <div class="rows">
 
-  <div class="intel-list">
+      <div class="row">
+        <span>1-second anomaly</span>
+        <b id="anomaly">—</b>
+      </div>
 
-    <div class="intel-row">
-      <span>Anomaly score</span>
-      <strong id="anomalyScore">—</strong>
+      <div class="row">
+        <span>Micro regime</span>
+        <b id="regime">—</b>
+      </div>
+
+      <div class="row">
+        <span>Core scan cycles</span>
+        <b id="coreRuns">—</b>
+      </div>
+
+      <div class="row">
+        <span>1s samples</span>
+        <b id="microRuns">—</b>
+      </div>
+
+      <div class="row">
+        <span>Practice sessions</span>
+        <b id="practiceRuns">—</b>
+      </div>
+
+      <div class="row">
+        <span>Confidence gate</span>
+        <b id="gate">—</b>
+      </div>
+
     </div>
 
-    <div class="intel-row">
-      <span>Market regime</span>
-      <strong id="marketRegime">—</strong>
+    <div class="doctrine">
+
+      <b>
+        Work relentlessly. Trade selectively.
+      </b>
+
+      Second-level detection is allowed to learn aggressively.
+      Capital decisions stay gated by evidence, transaction costs,
+      and risk controls.
+
     </div>
-
-    <div class="intel-row">
-      <span>Confidence gate</span>
-      <strong id="confidenceGate">—</strong>
-    </div>
-
-    <div class="intel-row">
-      <span>Live scan cycles</span>
-      <strong id="scanCycles">—</strong>
-    </div>
-
-    <div class="intel-row">
-      <span>Historical practice</span>
-      <strong id="practiceCycles">—</strong>
-    </div>
-
-    <div class="intel-row">
-      <span>Last decision</span>
-      <strong id="lastDecision">—</strong>
-    </div>
-
-  </div>
-
-  <div class="doctrine-card">
-
-    <span>
-      OPERATING DOCTRINE
-    </span>
-
-    <strong>
-      Work relentlessly. Trade selectively.
-    </strong>
-
-    <p>
-      Accuracy over activity. Capital preservation over forced opportunity.
-    </p>
 
   </div>
 
 </aside>
 
-<section class="metrics-row">
+<section class="metrics">
 
-  <div class="metric-card">
+  <div class="metric">
 
-    <div class="metric-top">
-      24H HIGH
-    </div>
-
-    <div id="high24h" class="metric-value">
-      —
-    </div>
-
-  </div>
-
-  <div class="metric-card">
-
-    <div class="metric-top">
-      24H LOW
-    </div>
-
-    <div id="low24h" class="metric-value">
-      —
-    </div>
-
-  </div>
-
-  <div class="metric-card">
-
-    <div class="metric-top">
-      24H BTC VOLUME
-    </div>
-
-    <div id="volume24h" class="metric-value">
-      —
-    </div>
-
-  </div>
-
-  <div class="metric-card">
-
-    <div class="metric-top">
+    <div class="mlabel">
       PAPER EQUITY
     </div>
 
-    <div id="paperEquity" class="metric-value">
+    <div id="equity" class="mvalue">
       —
     </div>
 
-    <div id="paperEquitySub" class="metric-sub">
-      Autonomous simulated account
+    <div class="msub">
+      Forward simulated account
+    </div>
+
+  </div>
+
+  <div class="metric">
+
+    <div class="mlabel">
+      FORWARD P&L
+    </div>
+
+    <div id="forwardPnl" class="mvalue">
+      —
+    </div>
+
+    <div id="forwardSub" class="msub">
+      —
+    </div>
+
+  </div>
+
+  <div class="metric">
+
+    <div class="mlabel">
+      FORWARD TRADES
+    </div>
+
+    <div id="forwardTrades" class="mvalue">
+      —
+    </div>
+
+    <div class="msub">
+      Actual forward paper decisions
+    </div>
+
+  </div>
+
+  <div class="metric">
+
+    <div class="mlabel">
+      DAY P&L
+    </div>
+
+    <div id="dayPnl" class="mvalue">
+      —
+    </div>
+
+    <div id="daySub" class="msub">
+      —
+    </div>
+
+  </div>
+
+  <div class="metric">
+
+    <div class="mlabel">
+      PRACTICE P&L
+    </div>
+
+    <div id="practicePnl" class="mvalue">
+      —
+    </div>
+
+    <div id="practiceSub" class="msub">
+      Normalized historical replay
+    </div>
+
+  </div>
+
+  <div class="metric">
+
+    <div class="mlabel">
+      PRACTICE W / L / S
+    </div>
+
+    <div id="practiceWls" class="mvalue">
+      —
+    </div>
+
+    <div id="practiceWin" class="msub">
+      —
+    </div>
+
+  </div>
+
+  <div class="metric">
+
+    <div class="mlabel">
+      1S SHADOW P&L
+    </div>
+
+    <div id="microPnl" class="mvalue">
+      —
+    </div>
+
+    <div id="microSub" class="msub">
+      Second-level research only
+    </div>
+
+  </div>
+
+  <div class="metric">
+
+    <div class="mlabel">
+      1S W / L / S
+    </div>
+
+    <div id="microWls" class="mvalue">
+      —
+    </div>
+
+    <div id="microWin" class="msub">
+      —
     </div>
 
   </div>
 
 </section>
 
-<section class="bottom-panel panel">
+<section class="panel full">
 
-  <div class="panel-heading">
+  <div class="head">
 
-    <div>
-      PRACTICE & SETUP LAB
-    </div>
+    1-SECOND MICROSTRUCTURE MATRIX
 
-    <span>
-      NO LIVE CAPITAL
+    <span id="microHeartbeat">
+      —
     </span>
 
   </div>
 
-  <div class="empty-grid">
+  <div class="microgrid">
 
-    <div id="setupModule" class="empty-module">
+    <div class="box">
 
-      <div class="module-kicker">
-        SETUP QUEUE
-      </div>
+      <small>
+        SPREAD
+      </small>
 
-      <h3>
-        Scanning continuously
-      </h3>
+      <b id="spread">
+        —
+      </b>
 
-      <p>
-        No qualifying setup yet.
-      </p>
-
-    </div>
-
-    <div id="tradeModule" class="empty-module">
-
-      <div class="module-kicker">
-        PAPER TRADES
-      </div>
-
-      <h3>
-        No simulated positions
-      </h3>
-
-      <p>
-        The bot can choose not to trade.
-      </p>
+      <em>
+        bid/ask friction
+      </em>
 
     </div>
 
-    <div id="learningModule" class="empty-module">
+    <div class="box">
 
-      <div class="module-kicker">
-        LEARNING LOG
-      </div>
+      <small>
+        BOOK IMBALANCE
+      </small>
 
-      <h3>
-        Learning engine active
-      </h3>
+      <b id="imbalance">
+        —
+      </b>
 
-      <p>
-        Waiting for reviewed evidence.
-      </p>
+      <em>
+        -1 sell / +1 buy pressure
+      </em>
+
+    </div>
+
+    <div class="box">
+
+      <small>
+        MICROPRICE EDGE
+      </small>
+
+      <b id="microEdge">
+        —
+      </b>
+
+      <em>
+        weighted fair-price displacement
+      </em>
+
+    </div>
+
+    <div class="box">
+
+      <small>
+        1S VELOCITY
+      </small>
+
+      <b id="v1">
+        —
+      </b>
+
+      <em>
+        price movement in bps
+      </em>
+
+    </div>
+
+    <div class="box">
+
+      <small>
+        5S VELOCITY
+      </small>
+
+      <b id="v5">
+        —
+      </b>
+
+      <em>
+        short burst direction
+      </em>
+
+    </div>
+
+    <div class="box">
+
+      <small>
+        15S VELOCITY
+      </small>
+
+      <b id="v15">
+        —
+      </b>
+
+      <em>
+        micro trend persistence
+      </em>
+
+    </div>
+
+    <div class="box">
+
+      <small>
+        ANOMALY SCORE
+      </small>
+
+      <b id="microAnom">
+        —
+      </b>
+
+      <em>
+        velocity + spread + book pressure
+      </em>
+
+    </div>
+
+    <div class="box">
+
+      <small>
+        SECOND SAMPLES
+      </small>
+
+      <b id="secondSamples">
+        —
+      </b>
+
+      <em>
+        successful micro scans
+      </em>
 
     </div>
 
@@ -1031,99 +1061,115 @@
 
 </section>
 
-<section class="bot-research">
+<section class="two">
 
-  <div class="research-card">
+  <section class="panel">
 
-    <div class="panel-heading">
+    <div class="head">
 
-      <div>
-        VALIDATION & PRACTICE
-      </div>
+      RECENT 1S SIGNALS
 
       <span>
-        GATED LEARNING
+        SHADOW / COST-ADJUSTED
       </span>
 
     </div>
 
-    <div class="research-body">
+    <div id="microSignals" class="body">
 
-      <div class="research-grid">
-
-        <div class="stat-box">
-
-          <div class="label">
-            HISTORICAL CANDLES
-          </div>
-
-          <div id="practiceCandles" class="value">
-            —
-          </div>
-
-        </div>
-
-        <div class="stat-box">
-
-          <div class="label">
-            SETUPS PRACTICED
-          </div>
-
-          <div id="practiceSetups" class="value">
-            —
-          </div>
-
-        </div>
-
-        <div class="stat-box">
-
-          <div class="label">
-            PRACTICE SESSIONS
-          </div>
-
-          <div id="practiceSessions" class="value">
-            —
-          </div>
-
-        </div>
-
-        <div class="stat-box">
-
-          <div class="label">
-            TOTAL PAPER P&L
-          </div>
-
-          <div id="totalPaperPnl" class="value">
-            —
-          </div>
-
-        </div>
-
-      </div>
-
-      <div id="strategyStats" style="margin-top:10px">
-
-        <div class="micro-note">
-          Waiting for strategy evidence…
-        </div>
-
-      </div>
-
-      <div class="micro-note">
-        Historical replay evidence is kept separate from forward paper trades.
+      <div class="empty">
+        No second-level signals yet.
       </div>
 
     </div>
 
-  </div>
+  </section>
 
-  <div class="research-card">
+  <section class="panel">
 
-    <div class="panel-heading">
+    <div class="head">
 
-      <div>
-        LEARNING JOURNAL
+      FORWARD PAPER TRADES
+
+      <span>
+        NO LIVE CAPITAL
+      </span>
+
+    </div>
+
+    <div id="paperTrades" class="body">
+
+      <div class="empty">
+        No forward paper trades yet.
       </div>
+
+    </div>
+
+  </section>
+
+</section>
+
+<section class="two">
+
+  <section class="panel">
+
+    <div class="head">
+
+      PRACTICE STRATEGY PERFORMANCE
+
+      <span>
+        HISTORICAL
+      </span>
+
+    </div>
+
+    <div class="body">
+
+      <div id="practiceTable"></div>
+
+      <div class="note">
+        Practice P&L is normalized from R using the configured
+        paper risk amount. It does not change forward equity.
+      </div>
+
+    </div>
+
+  </section>
+
+  <section class="panel">
+
+    <div class="head">
+
+      1S STRATEGY PERFORMANCE
+
+      <span>
+        FORWARD SHADOW
+      </span>
+
+    </div>
+
+    <div class="body">
+
+      <div id="microTable"></div>
+
+      <div class="note">
+        Second-level strategies remain shadow-only until they
+        build enough evidence after fees and slippage.
+      </div>
+
+    </div>
+
+  </section>
+
+</section>
+
+<section class="two">
+
+  <section class="panel">
+
+    <div class="head">
+
+      LEARNING JOURNAL
 
       <span>
         AUDITABLE
@@ -1131,25 +1177,46 @@
 
     </div>
 
-    <div id="learningFeed" class="research-body">
+    <div id="learning" class="body">
 
-      <div class="micro-note">
-        Waiting for reviewed evidence…
+      <div class="empty">
+        Waiting for evidence.
       </div>
 
     </div>
 
-  </div>
+  </section>
+
+  <section class="panel">
+
+    <div class="head">
+
+      LATEST CORE DECISIONS
+
+      <span>
+        1-MINUTE ENGINE
+      </span>
+
+    </div>
+
+    <div id="coreDecisions" class="body">
+
+      <div class="empty">
+        Waiting for core scans.
+      </div>
+
+    </div>
+
+  </section>
 
 </section>
 
 </main>
 
-</div>
-
 <script src="https://unpkg.com/lightweight-charts@5.2.1/dist/lightweight-charts.standalone.production.js"></script>
 
 <script>
+
 (() => {
 
   'use strict';
@@ -1160,162 +1227,123 @@
   const WS =
     'wss://ws-feed.exchange.coinbase.com';
 
-  const granularities = {
+  const G = {
+
     '1m':60,
     '5m':300,
     '15m':900,
     '1h':3600,
     '6h':21600,
     '1d':86400
-  };
-
-  const els = {
-
-    feedStatus:
-      document.querySelector('#feedStatus'),
-
-    livePrice:
-      document.querySelector('#livePrice'),
-
-    change24h:
-      document.querySelector('#change24h'),
-
-    high24h:
-      document.querySelector('#high24h'),
-
-    low24h:
-      document.querySelector('#low24h'),
-
-    volume24h:
-      document.querySelector('#volume24h'),
-
-    chartState:
-      document.querySelector('#chartState'),
-
-    chart:
-      document.querySelector('#chart'),
-
-    chartFallback:
-      document.querySelector('#chartFallback'),
-
-    timeframes:
-      document.querySelector('#timeframes')
 
   };
 
-  let timeframe = '1m';
+  let tf =
+    '1m';
+
+  let chart;
+
+  let series;
 
   let candles = [];
 
-  let lastTicker = null;
+  let ticker = null;
 
-  let chart = null;
+  const $ =
+    id =>
+      document.getElementById(id);
 
-  let candleSeries = null;
+  const money =
+    v =>
+      Number.isFinite(Number(v))
+        ?
+          new Intl.NumberFormat(
+            'en-US',
+            {
+              style:'currency',
+              currency:'USD',
+              maximumFractionDigits:2
+            }
+          ).format(
+            Number(v)
+          )
+        :
+          '—';
 
-  const money = value => {
+  function feed(ok){
 
-    if (
-      value == null ||
-      Number.isNaN(value)
-    ) {
-      return '—';
-    }
+    $('feedPill').className =
+      'pill ' +
+      (
+        ok
+          ?
+            'live'
+          :
+            'dead'
+      );
 
-    return new Intl.NumberFormat(
-      'en-US',
-      {
-        style:'currency',
-        currency:'USD',
-        maximumFractionDigits:2
-      }
-    ).format(value);
-
-  };
-
-  const compact = value => {
-
-    if (
-      value == null ||
-      Number.isNaN(value)
-    ) {
-      return '—';
-    }
-
-    return new Intl.NumberFormat(
-      'en-US',
-      {
-        maximumFractionDigits:1
-      }
-    ).format(value);
-
-  };
-
-  function setFeedStatus(status) {
-
-    els.feedStatus.className =
-      `status-pill ${status}`;
-
-    const labels = {
-
-      live:
-        'LIVE FEED',
-
-      connecting:
-        'CONNECTING',
-
-      offline:
-        'OFFLINE'
-
-    };
-
-    els.feedStatus.innerHTML =
-      `<span class="dot"></span> ${labels[status]}`;
+    $('feedPill').textContent =
+      ok
+        ?
+          'LIVE MARKET'
+        :
+          'MARKET OFFLINE';
 
   }
 
-  function renderTicker() {
+  function renderTicker(){
 
-    if (!lastTicker) return;
+    if(
+      !ticker
+    ){
+      return;
+    }
 
-    els.livePrice.textContent =
-      money(lastTicker.price);
+    $('livePrice').textContent =
+      money(
+        ticker.price
+      );
 
-    els.high24h.textContent =
-      money(lastTicker.high24h);
+    if(
+      ticker.open
+    ){
 
-    els.low24h.textContent =
-      money(lastTicker.low24h);
-
-    els.volume24h.textContent =
-      lastTicker.volume24h == null
-        ? '—'
-        : `${compact(lastTicker.volume24h)} BTC`;
-
-    if (lastTicker.open24h) {
-
-      const change =
+      const p =
         (
-          (
-            lastTicker.price -
-            lastTicker.open24h
-          ) /
-          lastTicker.open24h
-        ) * 100;
+          ticker.price -
+          ticker.open
+        ) /
+        ticker.open *
+        100;
 
-      els.change24h.textContent =
-        `${change >= 0 ? '+' : ''}${change.toFixed(2)}% 24h`;
+      $('change24').textContent =
+        (
+          p >= 0
+            ?
+              '+'
+            :
+              ''
+        ) +
+        p.toFixed(2) +
+        '% 24h';
 
-      els.change24h.className =
-        `change ${change >= 0 ? 'positive' : 'negative'}`;
+      $('change24').className =
+        'chg ' +
+        (
+          p >= 0
+            ?
+              'pos'
+            :
+              'neg'
+        );
 
     }
 
   }
 
-  async function fetchJson(url) {
+  async function j(url){
 
-    const response =
+    const r =
       await fetch(
         url,
         {
@@ -1325,49 +1353,42 @@
         }
       );
 
-    if (!response.ok) {
+    if(
+      !r.ok
+    ){
 
-      throw new Error(
-        `${response.status} ${response.statusText}`
+      throw Error(
+        r.status
       );
 
     }
 
-    return response.json();
+    return r.json();
 
   }
 
-  async function loadTickerSnapshot() {
+  async function snapshot(){
 
-    const [ticker,stats] =
+    const [
+      t,
+      s
+    ] =
       await Promise.all([
-        fetchJson(
+        j(
           `${REST}/products/BTC-USD/ticker`
         ),
-        fetchJson(
+        j(
           `${REST}/products/BTC-USD/stats`
         )
       ]);
 
-    lastTicker = {
+    ticker = {
 
       price:
-        Number(ticker.price),
+        +t.price,
 
-      open24h:
-        Number(stats.open),
-
-      high24h:
-        Number(stats.high),
-
-      low24h:
-        Number(stats.low),
-
-      volume24h:
-        Number(stats.volume),
-
-      time:
-        ticker.time
+      open:
+        +s.open
 
     };
 
@@ -1375,120 +1396,95 @@
 
   }
 
-  async function loadCandles() {
-
-    const granularity =
-      granularities[timeframe] || 60;
-
-    els.chartState.textContent =
-      'Loading history…';
+  async function load(){
 
     const rows =
-      await fetchJson(
-        `${REST}/products/BTC-USD/candles?granularity=${granularity}`
+      await j(
+        `${REST}/products/BTC-USD/candles?granularity=${G[tf]}`
       );
 
     candles =
       rows
         .map(
-          ([
-            time,
-            low,
-            high,
-            open,
-            close,
-            volume
-          ]) => ({
-            time,
-            low,
-            high,
-            open,
-            close,
-            volume
+          r => ({
+            time:+r[0],
+            low:+r[1],
+            high:+r[2],
+            open:+r[3],
+            close:+r[4]
           })
         )
         .sort(
           (a,b) =>
-            a.time - b.time
+            a.time -
+            b.time
         );
 
-    if (candleSeries) {
+    series.setData(
+      candles
+    );
 
-      candleSeries.setData(
-        candles.map(
-          c => ({
-            time:c.time,
-            open:c.open,
-            high:c.high,
-            low:c.low,
-            close:c.close
-          })
-        )
-      );
+    chart
+      .timeScale()
+      .fitContent();
 
-      chart
-        .timeScale()
-        .fitContent();
-
-    }
-
-    els.chartState.textContent =
-      `${candles.length} candles`;
+    $('chartState').textContent =
+      candles.length +
+      ' candles';
 
   }
 
-  function initChart() {
+  function init(){
 
-    if (
-      !window.LightweightCharts ||
-      !els.chart
-    ) {
+    const L =
+      window.LightweightCharts;
 
-      els.chartFallback
-        .classList
-        .remove('hidden');
+    if(
+      !L
+    ){
+
+      $('chartState').textContent =
+        'chart unavailable';
 
       return;
 
     }
 
-    const {
-      createChart,
-      CandlestickSeries,
-      ColorType,
-      CrosshairMode
-    } = window.LightweightCharts;
-
     chart =
-      createChart(
-        els.chart,
+      L.createChart(
+        $('chart'),
         {
+
           width:
-            els.chart.clientWidth,
+            $('chart').clientWidth,
 
           height:
-            els.chart.clientHeight,
+            $('chart').clientHeight,
 
           layout:{
+
             background:{
               type:
-                ColorType.Solid,
+                L.ColorType.Solid,
               color:
                 '#090d14'
             },
+
             textColor:
-              '#7f8da5',
-            fontFamily:
-              'Inter, system-ui, sans-serif'
+              '#78899f'
+
           },
 
           grid:{
+
             vertLines:{
               color:'#111925'
             },
+
             horzLines:{
               color:'#111925'
             }
+
           },
 
           rightPriceScale:{
@@ -1497,103 +1493,72 @@
 
           timeScale:{
             borderColor:'#1b2635',
-            timeVisible:true,
-            secondsVisible:false
+            timeVisible:true
           },
 
           crosshair:{
-            mode:CrosshairMode.Normal
+            mode:
+              L.CrosshairMode.Normal
           }
+
         }
       );
 
-    candleSeries =
+    series =
       chart.addSeries(
-        CandlestickSeries,
+        L.CandlestickSeries,
         {
-          upColor:'#20d6a3',
-          downColor:'#ff506d',
-          borderUpColor:'#20d6a3',
-          borderDownColor:'#ff506d',
-          wickUpColor:'#20d6a3',
-          wickDownColor:'#ff506d',
-          priceLineVisible:true,
-          lastValueVisible:true
+
+          upColor:
+            '#21d6a3',
+
+          downColor:
+            '#ff526f',
+
+          borderUpColor:
+            '#21d6a3',
+
+          borderDownColor:
+            '#ff526f',
+
+          wickUpColor:
+            '#21d6a3',
+
+          wickDownColor:
+            '#ff526f'
+
         }
       );
 
-    const ro =
-      new ResizeObserver(
-        () =>
-          chart.applyOptions({
-            width:
-              els.chart.clientWidth,
-            height:
-              els.chart.clientHeight
-          })
+    new ResizeObserver(
+      () =>
+        chart.applyOptions({
+          width:
+            $('chart').clientWidth,
+          height:
+            $('chart').clientHeight
+        })
+    ).observe(
+      $('chart')
+    );
+
+  }
+
+  function socket(){
+
+    const w =
+      new WebSocket(
+        WS
       );
 
-    ro.observe(
-      els.chart
-    );
-
-  }
-
-  function updateCurrentCandle(price) {
-
-    if (
-      !candleSeries ||
-      !candles.length
-    ) {
-      return;
-    }
-
-    const last =
-      candles[
-        candles.length - 1
-      ];
-
-    candleSeries.update({
-
-      time:
-        last.time,
-
-      open:
-        last.open,
-
-      high:
-        Math.max(
-          last.high,
-          price
-        ),
-
-      low:
-        Math.min(
-          last.low,
-          price
-        ),
-
-      close:
-        price
-
-    });
-
-  }
-
-  function connectTicker() {
-
-    setFeedStatus(
-      'connecting'
-    );
-
-    const ws =
-      new WebSocket(WS);
-
-    ws.addEventListener(
-      'open',
+    w.onopen =
       () => {
 
-        ws.send(
+        feed(
+          true
+        );
+
+        w.send(
           JSON.stringify({
             type:'subscribe',
             product_ids:[
@@ -1605,175 +1570,155 @@
           })
         );
 
-        setFeedStatus(
-          'live'
-        );
+      };
 
-      }
-    );
+    w.onmessage =
+      e => {
 
-    ws.addEventListener(
-      'message',
-      event => {
-
-        const data =
+        const d =
           JSON.parse(
-            event.data
+            e.data
           );
 
-        if (
-          data.type !== 'ticker' ||
-          data.product_id !== 'BTC-USD' ||
-          !data.price
-        ) {
+        if(
+          d.type !==
+            'ticker' ||
+          !d.price
+        ){
           return;
         }
 
-        lastTicker = {
+        ticker = {
 
           price:
-            Number(
-              data.price
-            ),
+            +d.price,
 
-          open24h:
-            data.open_24h
-              ? Number(
-                  data.open_24h
-                )
-              : lastTicker?.open24h ?? null,
-
-          high24h:
-            data.high_24h
-              ? Number(
-                  data.high_24h
-                )
-              : lastTicker?.high24h ?? null,
-
-          low24h:
-            data.low_24h
-              ? Number(
-                  data.low_24h
-                )
-              : lastTicker?.low24h ?? null,
-
-          volume24h:
-            data.volume_24h
-              ? Number(
-                  data.volume_24h
-                )
-              : lastTicker?.volume24h ?? null,
-
-          time:
-            data.time
+          open:
+            d.open_24h
+              ?
+                +d.open_24h
+              :
+                ticker?.open
 
         };
 
         renderTicker();
 
-        updateCurrentCandle(
-          lastTicker.price
-        );
+        if(
+          series &&
+          candles.length
+        ){
 
-      }
-    );
+          const c =
+            candles[
+              candles.length -
+              1
+            ];
 
-    ws.addEventListener(
-      'error',
-      () =>
-        setFeedStatus(
-          'offline'
-        )
-    );
+          series.update({
 
-    ws.addEventListener(
-      'close',
-      () => {
+            time:
+              c.time,
 
-        setFeedStatus(
-          'offline'
-        );
+            open:
+              c.open,
 
-        setTimeout(
-          connectTicker,
-          5000
-        );
+            high:
+              Math.max(
+                c.high,
+                +d.price
+              ),
 
-      }
-    );
+            low:
+              Math.min(
+                c.low,
+                +d.price
+              ),
 
-  }
+            close:
+              +d.price
 
-  els.timeframes
-    .addEventListener(
-      'click',
-      async event => {
-
-        const button =
-          event.target.closest(
-            'button[data-tf]'
-          );
-
-        if (!button) return;
-
-        timeframe =
-          button.dataset.tf;
-
-        [
-          ...els.timeframes
-            .querySelectorAll(
-              'button'
-            )
-        ].forEach(
-          btn =>
-            btn.classList.toggle(
-              'active',
-              btn === button
-            )
-        );
-
-        try {
-
-          await loadCandles();
-
-        } catch (error) {
-
-          els.chartState.textContent =
-            `History error: ${error.message}`;
+          });
 
         }
 
-      }
-    );
+      };
 
-  async function boot() {
+    w.onerror =
+      () =>
+        feed(
+          false
+        );
 
-    initChart();
+    w.onclose =
+      () => {
 
-    try {
+        feed(
+          false
+        );
 
-      await Promise.all([
-        loadTickerSnapshot(),
-        loadCandles()
-      ]);
+        setTimeout(
+          socket,
+          4000
+        );
 
-    } catch (error) {
-
-      els.chartState.textContent =
-        `Market data error: ${error.message}`;
-
-    }
-
-    connectTicker();
+      };
 
   }
 
-  boot();
+  document
+    .querySelectorAll(
+      '[data-tf]'
+    )
+    .forEach(
+      b =>
+        b.onclick =
+          async () => {
+
+            document
+              .querySelectorAll(
+                '[data-tf]'
+              )
+              .forEach(
+                x =>
+                  x.classList.toggle(
+                    'on',
+                    x === b
+                  )
+              );
+
+            tf =
+              b.dataset.tf;
+
+            try{
+
+              await load();
+
+            }catch(e){
+
+              $('chartState').textContent =
+                'history error';
+
+            }
+
+          }
+    );
+
+  init();
+
+  Promise.allSettled([
+    snapshot(),
+    load()
+  ]);
+
+  socket();
 
 })();
+
 </script>
 
 <script>
+
 (() => {
 
   'use strict';
@@ -1785,555 +1730,834 @@
     id =>
       document.getElementById(id);
 
-  const money =
-    value =>
-      Number.isFinite(Number(value))
-        ? new Intl.NumberFormat(
+  const n =
+    v =>
+      Number(
+        v ?? 0
+      );
+
+  const fmt =
+    v =>
+      Number.isFinite(
+        n(v)
+      )
+        ?
+          new Intl.NumberFormat(
             'en-US',
             {
-              style:'currency',
-              currency:'USD',
               maximumFractionDigits:2
             }
           ).format(
-            Number(value)
+            n(v)
           )
-        : '—';
+        :
+          '—';
 
   const compact =
-    value =>
-      Number.isFinite(Number(value))
-        ? new Intl.NumberFormat(
-            'en-US',
-            {
-              notation:'compact',
-              maximumFractionDigits:1
-            }
-          ).format(
-            Number(value)
-          )
-        : '—';
+    v =>
+      new Intl.NumberFormat(
+        'en-US',
+        {
+          notation:'compact',
+          maximumFractionDigits:1
+        }
+      ).format(
+        n(v)
+      );
 
-  const num =
-    (value,digits=2) =>
-      Number.isFinite(Number(value))
-        ? Number(value)
-            .toFixed(digits)
-        : '—';
+  const money =
+    v =>
+      new Intl.NumberFormat(
+        'en-US',
+        {
+          style:'currency',
+          currency:'USD',
+          maximumFractionDigits:2
+        }
+      ).format(
+        n(v)
+      );
 
   const pct =
-    value =>
-      Number.isFinite(Number(value))
-        ? `${Number(value) >= 0 ? '+' : ''}${Number(value).toFixed(2)}%`
-        : '—';
+    v =>
+      (
+        n(v) *
+        100
+      ).toFixed(1) +
+      '%';
 
-  const when =
-    value =>
-      value
-        ? new Date(value)
-            .toLocaleString(
-              [],
-              {
-                month:'short',
-                day:'numeric',
-                hour:'numeric',
-                minute:'2-digit'
-              }
-            )
-        : '—';
-
-  const ago =
-    seconds => {
-
-      if (
-        seconds == null
-      ) {
-        return '—';
-      }
-
-      if (
-        seconds < 60
-      ) {
-        return `${seconds}s ago`;
-      }
-
-      if (
-        seconds < 3600
-      ) {
-        return `${Math.round(seconds / 60)}m ago`;
-      }
-
-      return `${Math.round(seconds / 3600)}h ago`;
-
-    };
+  const bps =
+    v =>
+      (
+        n(v) >= 0
+          ?
+            '+'
+          :
+            ''
+      ) +
+      n(v).toFixed(3) +
+      ' bps';
 
   const esc =
-    value =>
+    s =>
       String(
-        value ?? '—'
+        s ?? '—'
       )
-        .replace(
-          /[&<>"']/g,
-          char => ({
-            '&':'&amp;',
-            '<':'&lt;',
-            '>':'&gt;',
-            '"':'&quot;',
-            "'":'&#39;'
-          }[char])
-        );
+      .replace(
+        /[&<>"']/g,
+        c => ({
+          '&':'&amp;',
+          '<':'&lt;',
+          '>':'&gt;',
+          '"':'&quot;',
+          "'":'&#39;'
+        }[c])
+      );
 
-  function statusPill(
+  const words =
+    s =>
+      String(
+        s ?? '—'
+      )
+      .replaceAll(
+        '_',
+        ' '
+      );
+
+  const when =
+    s =>
+      s
+        ?
+          new Date(
+            s
+          )
+          .toLocaleString(
+            [],
+            {
+              month:'short',
+              day:'numeric',
+              hour:'numeric',
+              minute:'2-digit',
+              second:'2-digit'
+            }
+          )
+        :
+          '—';
+
+  function pill(
     id,
     ok,
     on,
     off
-  ) {
+  ){
 
-    const element =
+    const e =
       $(id);
 
-    if (!element) {
-      return;
-    }
+    e.className =
+      'pill ' +
+      (
+        ok
+          ?
+            'live'
+          :
+            'dead'
+      );
 
-    element.className =
-      `status-pill ${ok ? 'live' : 'offline'}`;
-
-    element.innerHTML =
-      `<span class="dot"></span> ${ok ? on : off}`;
+    e.textContent =
+      ok
+        ?
+          on
+        :
+          off;
 
   }
 
-  function render(data) {
+  function color(
+    id,
+    v
+  ){
 
-    statusPill(
-      'botStatus',
-      data.system.engineOnline,
-      'BOT ONLINE',
-      'BOT OFFLINE'
+    $(id)
+      .classList
+      .remove(
+        'pos',
+        'neg'
+      );
+
+    if(
+      n(v) >
+      0
+    ){
+
+      $(id)
+        .classList
+        .add(
+          'pos'
+        );
+
+    }
+
+    if(
+      n(v) <
+      0
+    ){
+
+      $(id)
+        .classList
+        .add(
+          'neg'
+        );
+
+    }
+
+  }
+
+  function table(
+    headers,
+    rows
+  ){
+
+    return `
+      <table class="table">
+
+        <thead>
+
+          <tr>
+
+            ${
+              headers
+                .map(
+                  h =>
+                    `<th>${h}</th>`
+                )
+                .join('')
+            }
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          ${
+            rows.join('')
+          }
+
+        </tbody>
+
+      </table>
+    `;
+
+  }
+
+  function render(d){
+
+    pill(
+      'corePill',
+      d.system.engineOnline,
+      'CORE ONLINE',
+      'CORE OFFLINE'
     );
 
-    statusPill(
-      'practiceStatus',
-      data.practice.online,
+    pill(
+      'microPill',
+      d.micro.online,
+      '1S ONLINE',
+      '1S OFFLINE'
+    );
+
+    pill(
+      'practicePill',
+      d.practice.online,
       'PRACTICING',
       'PRACTICE OFFLINE'
     );
 
-    const run =
-      data.recentRuns?.[0] || {};
+    $('scanTitle').textContent =
+      d.micro.online
+        ?
+          'Second-level microstructure scanner active'
+        :
+          'Second-level scanner degraded';
 
-    const detail =
-      run.details || {};
-
-    const score =
-      Math.max(
-        0,
-        Math.min(
-          100,
-          Number(
-            detail.anomalyScore || 0
-          )
-        )
-      );
-
-    $('scannerTitle').textContent =
-      data.openTrade
-        ? `Managing ${String(data.openTrade.side).toUpperCase()} paper trade`
-        : 'Scanning BTC continuously';
-
-    $('scannerCopy').textContent =
-      data.system.engineOnline
-        ? `Autonomous scan succeeded ${ago(data.system.heartbeatLagSeconds)}. No minimum trade quota exists.`
-        : (
-            data.system.lastError ||
-            'Engine heartbeat is stale.'
+    $('scanCopy').textContent =
+      d.micro.online
+        ?
+          `Latest second-level sample ${n(d.micro.heartbeatLagSeconds).toFixed(1)}s ago. Core engine remains paper-only.`
+        :
+          (
+            d.micro.lastError ||
+            'Micro heartbeat is stale.'
           );
 
-    $('anomalyScore').textContent =
-      `${num(score,0)}/100`;
+    $('anomaly').textContent =
+      n(
+        d.micro.latest.anomalyScore
+      ).toFixed(0) +
+      '/100';
 
-    $('marketRegime').textContent =
-      String(
-        detail.regime ||
-        'waiting'
-      )
-        .replaceAll(
-          '_',
-          ' '
-        )
-        .toUpperCase();
+    $('regime').textContent =
+      words(
+        d.micro.latest.regime
+      ).toUpperCase();
 
-    $('confidenceGate').textContent =
-      `${num(data.account.minConfidencePct,0)}%`;
-
-    $('scanCycles').textContent =
+    $('coreRuns').textContent =
       compact(
-        data.system.runsCount
+        d.system.runsCount
       );
 
-    $('practiceCycles').textContent =
+    $('microRuns').textContent =
       compact(
-        data.practice.sessionsCount
+        d.micro.runsCount
       );
 
-    $('lastDecision').textContent =
-      String(
-        run.action ||
-        'observing'
-      )
-        .replaceAll(
-          '_',
-          ' '
-        )
-        .toUpperCase();
+    $('practiceRuns').textContent =
+      compact(
+        d.practice.sessionsCount
+      );
 
-    $('paperEquity').textContent =
+    $('gate').textContent =
+      n(
+        d.account.minConfidencePct
+      ).toFixed(0) +
+      '%';
+
+    $('equity').textContent =
       money(
-        data.account.equity
+        d.account.equity
       );
 
-    $('paperEquitySub').textContent =
-      `Today ${money(data.account.dayPnl)} (${pct(data.account.dayReturnPct)}) • fees ${data.account.feeBps} bps + ${data.account.slippageBps} bps slip assumption`;
-
-    $('practiceCandles').textContent =
-      compact(
-        data.practice.candlesProcessed
-      );
-
-    $('practiceSetups').textContent =
-      compact(
-        data.practice.setupsTested
-      );
-
-    $('practiceSessions').textContent =
-      compact(
-        data.practice.sessionsCount
-      );
-
-    $('totalPaperPnl').textContent =
+    $('forwardPnl').textContent =
       money(
-        data.account.totalPnl
+        d.account.totalPnl
       );
 
-    $('totalPaperPnl').className =
-      `value ${
-        data.account.totalPnl >= 0
-          ? 'positive-text'
-          : 'negative-text'
-      }`;
+    color(
+      'forwardPnl',
+      d.account.totalPnl
+    );
 
-    const signal =
-      data.recentSignals?.[0];
+    $('forwardSub').textContent =
+      n(
+        d.account.totalReturnPct
+      ).toFixed(2) +
+      '% since start';
 
-    $('setupModule').innerHTML =
-      signal
-        ? `
-          <div class="module-kicker">
-            LATEST SETUP DECISION
-          </div>
-
-          <h3>
-            ${esc(signal.side.toUpperCase())}
-            •
-            ${esc(signal.strategy.replaceAll('_',' '))}
-          </h3>
-
-          <p>
-            ${num(Number(signal.confidence) * 100,1)}% confidence
-            •
-            ${esc(signal.regime.replaceAll('_',' '))}
-            <br>
-            ${esc(signal.status)}
-            ${
-              signal.rejection_reason
-                ? ' • ' +
-                  esc(
-                    signal.rejection_reason
-                      .replaceAll('_',' ')
-                  )
-                : ''
-            }
-            <br>
-            ${esc(signal.reason)}
-          </p>
-        `
-        : `
-          <div class="module-kicker">
-            SETUP QUEUE
-          </div>
-
-          <h3>
-            Scanning continuously
-          </h3>
-
-          <p>
-            No qualifying setup has been detected yet.
-            Doing nothing is a valid decision.
-          </p>
-        `;
-
-    const trade =
-      data.openTrade ||
-      (
-        data.recentTrades?.[0] ||
-        null
+    $('forwardTrades').textContent =
+      fmt(
+        d.counts.paperTrades
       );
 
-    $('tradeModule').innerHTML =
-      trade
-        ? `
-          <div class="module-kicker">
-            ${
-              trade.status === 'open'
-                ? 'OPEN PAPER TRADE'
-                : 'LATEST PAPER TRADE'
-            }
-          </div>
+    $('dayPnl').textContent =
+      money(
+        d.account.dayPnl
+      );
 
-          <h3 class="${
-            trade.side === 'long'
-              ? 'positive-text'
-              : 'negative-text'
-          }">
-            ${esc(trade.side.toUpperCase())}
-            •
-            ${esc(trade.strategy.replaceAll('_',' '))}
-          </h3>
+    color(
+      'dayPnl',
+      d.account.dayPnl
+    );
 
-          <p>
-            Entry ${money(trade.entry_price)}
-            ${
-              trade.status === 'open'
-                ? `
-                  <br>
-                  Stop ${money(trade.stop_price)}
-                  •
-                  Target ${money(trade.target_price)}
-                  <br>
-                  Risk ${money(trade.risk_amount)}
-                `
-                : `
-                  <br>
-                  ${esc(trade.outcome || 'closed')}
-                  •
-                  ${money(trade.realized_pnl)}
-                  •
-                  ${num(trade.r_multiple,2)}R
-                `
-            }
-          </p>
-        `
-        : `
-          <div class="module-kicker">
-            PAPER TRADES
-          </div>
+    $('daySub').textContent =
+      n(
+        d.account.dayReturnPct
+      ).toFixed(2) +
+      '% today';
 
-          <h3>
-            No simulated position
-          </h3>
+    const p =
+      d.practice.aggregate ||
+      {};
 
-          <p>
-            The bot has not found a setup that clears its confidence and risk gates yet.
-          </p>
-        `;
+    $('practicePnl').textContent =
+      money(
+        p.normalizedPnl
+      );
 
-    const learning =
-      data.learningLog?.[0];
+    color(
+      'practicePnl',
+      p.normalizedPnl
+    );
 
-    $('learningModule').innerHTML =
-      learning
-        ? `
-          <div class="module-kicker">
-            LATEST LEARNING EVENT
-          </div>
+    $('practiceSub').textContent =
+      `${n(p.totalR).toFixed(2)}R • ${fmt(p.samples)} setups`;
 
-          <h3>
-            ${esc(
-              learning.event_type
-                .replaceAll('_',' ')
-            )}
-          </h3>
+    $('practiceWls').textContent =
+      `${n(p.wins)} / ${n(p.losses)} / ${n(p.scratches)}`;
 
-          <p>
-            ${when(learning.created_at)}
-            <br>
-            ${
-              learning.strategy
-                ? esc(
-                    learning.strategy
-                      .replaceAll('_',' ')
-                  )
-                : 'System evidence recorded.'
-            }
-          </p>
-        `
-        : `
-          <div class="module-kicker">
-            LEARNING LOG
-          </div>
+    $('practiceWin').textContent =
+      `${
+        p.winRate == null
+          ?
+            '—'
+          :
+            pct(
+              p.winRate
+            )
+      } win rate`;
 
-          <h3>
-            Learning engine active
-          </h3>
+    const m =
+      d.micro.aggregate ||
+      {};
 
-          <p>
-            Waiting for a reviewed trade, skipped setup, or historical replay session.
-          </p>
-        `;
+    $('microPnl').textContent =
+      money(
+        m.normalizedPnl
+      );
 
-    $('strategyStats').innerHTML =
+    color(
+      'microPnl',
+      m.normalizedPnl
+    );
+
+    $('microSub').textContent =
+      `${n(m.totalR).toFixed(2)}R • ${fmt(m.samples)} evaluated signals`;
+
+    $('microWls').textContent =
+      `${n(m.wins)} / ${n(m.losses)} / ${n(m.scratches)}`;
+
+    $('microWin').textContent =
+      `${
+        m.winRate == null
+          ?
+            '—'
+          :
+            pct(
+              m.winRate
+            )
+      } win rate`;
+
+    $('microHeartbeat').textContent =
+      `heartbeat ${n(d.micro.heartbeatLagSeconds).toFixed(1)}s • skipped overlaps ${n(d.micro.skippedOverlapCount)}`;
+
+    $('spread').textContent =
+      bps(
+        d.micro.latest.spreadBps
+      );
+
+    $('imbalance').textContent =
+      n(
+        d.micro.latest.bookImbalance
+      ).toFixed(3);
+
+    $('microEdge').textContent =
+      bps(
+        d.micro.latest.micropriceEdgeBps
+      );
+
+    $('v1').textContent =
+      bps(
+        d.micro.latest.velocity1sBps
+      );
+
+    $('v5').textContent =
+      bps(
+        d.micro.latest.velocity5sBps
+      );
+
+    $('v15').textContent =
+      bps(
+        d.micro.latest.velocity15sBps
+      );
+
+    $('microAnom').textContent =
+      n(
+        d.micro.latest.anomalyScore
+      ).toFixed(0) +
+      '/100';
+
+    $('secondSamples').textContent =
+      compact(
+        d.micro.runsCount
+      );
+
+    const ms =
       (
-        data.strategies || []
-      )
-        .map(
-          strategy => `
-            <div class="strategy-item">
+        d.micro.recentSignals ||
+        []
+      ).slice(
+        0,
+        8
+      );
 
-              <div class="strategy-name">
+    $('microSignals').innerHTML =
+      ms.length
+        ?
+          ms
+            .map(
+              s => `
+                <div class="item">
 
-                <span>
-                  ${esc(
-                    strategy.strategy
-                      .replaceAll('_',' ')
-                      .toUpperCase()
-                  )}
-                </span>
+                  <div class="itemTop">
 
-                <span class="${
-                  strategy.state === 'paper_validated'
-                    ? 'positive-text'
-                    : 'warning-text'
-                }">
-                  ${esc(
-                    strategy.state
-                      .replaceAll('_',' ')
-                      .toUpperCase()
-                  )}
-                </span>
+                    <span>
+                      ${esc(String(s.side).toUpperCase())}
+                      •
+                      ${esc(words(s.strategy).toUpperCase())}
+                    </span>
 
-              </div>
+                    <span class="tag">
+                      ${esc(s.status)}
+                    </span>
 
-              <div class="strategy-meta">
-                Forward trades:
-                ${strategy.trades}
-                •
-                posterior win probability:
-                ${num(Number(strategy.posteriorWinRate) * 100,1)}%
-                •
-                avg R:
-                ${num(strategy.avg_r,2)}
-                •
-                counterfactual reviews:
-                ${strategy.cf_signals}
-              </div>
+                  </div>
 
-            </div>
+                  <p>
+                    ${when(s.detected_at)}
+                    •
+                    confidence
+                    ${(n(s.confidence) * 100).toFixed(1)}%
+                    •
+                    horizon
+                    ${n(s.horizon_seconds)}s
+
+                    ${
+                      s.evaluated_at
+                        ?
+                          `
+                            •
+                            ${esc(s.outcome)}
+                            •
+                            ${n(s.r_multiple).toFixed(2)}R
+                            •
+                            ${money(s.normalized_pnl)}
+                          `
+                        :
+                          ''
+                    }
+
+                    <br>
+
+                    ${esc(s.reason)}
+
+                  </p>
+
+                </div>
+              `
+            )
+            .join('')
+        :
           `
-        )
-        .join('')
-      ||
-      `
-        <div class="micro-note">
-          No strategy statistics yet.
-        </div>
-      `;
+            <div class="empty">
+              No second-level signals yet.
+              The bot is still collecting
+              second-by-second evidence.
+            </div>
+          `;
 
-    $('learningFeed').innerHTML =
+    const trades =
       (
-        data.learningLog || []
-      )
-        .slice(
-          0,
-          6
-        )
-        .map(
-          event => {
+        d.recentTrades ||
+        []
+      ).slice(
+        0,
+        8
+      );
 
-            const lesson =
-              event.lesson || {};
+    $('paperTrades').innerHTML =
+      trades.length
+        ?
+          trades
+            .map(
+              t => `
+                <div class="item">
 
-            let text =
-              'Evidence recorded.';
+                  <div class="itemTop">
 
-            if (
-              event.event_type ===
-              'historical_practice_session'
-            ) {
+                    <span>
+                      ${esc(String(t.side).toUpperCase())}
+                      •
+                      ${esc(words(t.strategy).toUpperCase())}
+                    </span>
 
-              text =
-                `Replayed ${lesson.candles || 0} candles and tested ${lesson.setupsTested || 0} setups; average ${num(lesson.avgR,2)}R.`;
+                    <span class="tag">
+                      ${esc(t.status)}
+                    </span>
 
-            }
+                  </div>
 
-            if (
-              event.event_type ===
-              'paper_trade_review'
-            ) {
+                  <p>
 
-              text =
-                `${lesson.outcome || 'Trade'}: ${num(lesson.rMultiple,2)}R, ${money(lesson.netPnl)}; exit ${String(lesson.exitReason || '—').replaceAll('_',' ')}.`;
+                    ${when(t.entry_time)}
+                    •
+                    entry
+                    ${money(t.entry_price)}
 
-            }
+                    ${
+                      t.status === 'closed'
+                        ?
+                          `
+                            •
+                            ${esc(t.outcome)}
+                            •
+                            ${money(t.realized_pnl)}
+                            •
+                            ${n(t.r_multiple).toFixed(2)}R
+                          `
+                        :
+                          `
+                            •
+                            risk
+                            ${money(t.risk_amount)}
+                          `
+                    }
 
-            if (
-              event.event_type ===
-              'counterfactual_review'
-            ) {
+                  </p>
 
-              text =
-                `Skipped setup later produced ${lesson.hypotheticalOutcome || '—'} / ${num(lesson.hypotheticalR,2)}R.`;
+                </div>
+              `
+            )
+            .join('')
+        :
+          `
+            <div class="empty">
+              No forward paper trades yet.
+              Forward P&L is correctly $0 until
+              a setup passes the entry gates.
+            </div>
+          `;
 
-            }
+    const pr =
+      (
+        d.practice.strategyRegimes ||
+        []
+      ).slice(
+        0,
+        12
+      );
 
-            if (
-              event.event_type ===
-              'paper_trade_opened'
-            ) {
+    $('practiceTable').innerHTML =
+      pr.length
+        ?
+          table(
+            [
+              'Strategy',
+              'Regime',
+              'N',
+              'W',
+              'L',
+              'Win %',
+              'Avg R'
+            ],
+            pr.map(
+              s => `
+                <tr>
+                  <td>${esc(words(s.strategy))}</td>
+                  <td>${esc(words(s.regime))}</td>
+                  <td>${n(s.samples)}</td>
+                  <td>${n(s.wins)}</td>
+                  <td>${n(s.losses)}</td>
+                  <td>${s.winRate == null ? '—' : pct(s.winRate)}</td>
+                  <td>${n(s.avg_r).toFixed(2)}</td>
+                </tr>
+              `
+            )
+          )
+        :
+          `
+            <div class="empty">
+              No practice evidence yet.
+            </div>
+          `;
 
-              text =
-                `Paper position opened with ${num(Number(lesson.confidence) * 100,1)}% confidence and ${money(lesson.riskAmount)} simulated risk.`;
+    const mr =
+      d.micro.strategies ||
+      [];
 
-            }
+    $('microTable').innerHTML =
+      mr.length
+        ?
+          table(
+            [
+              'Strategy',
+              'N',
+              'W',
+              'L',
+              'Win %',
+              'Avg R',
+              'P&L'
+            ],
+            mr.map(
+              s => `
+                <tr>
+                  <td>${esc(words(s.strategy))}</td>
+                  <td>${n(s.samples)}</td>
+                  <td>${n(s.wins)}</td>
+                  <td>${n(s.losses)}</td>
+                  <td>${s.winRate == null ? '—' : pct(s.winRate)}</td>
+                  <td>${n(s.avg_r).toFixed(2)}</td>
+                  <td>${money(s.total_normalized_pnl)}</td>
+                </tr>
+              `
+            )
+          )
+        :
+          `
+            <div class="empty">
+              Micro signals are accumulating;
+              no evaluated outcomes yet.
+            </div>
+          `;
 
-            return `
-              <div class="learning-event">
+    const l =
+      (
+        d.learningLog ||
+        []
+      ).slice(
+        0,
+        8
+      );
 
-                <strong>
-                  ${esc(
-                    event.event_type
-                      .replaceAll('_',' ')
-                      .toUpperCase()
-                  )}
-                  •
-                  ${when(event.created_at)}
-                </strong>
+    $('learning').innerHTML =
+      l.length
+        ?
+          l
+            .map(
+              e => {
 
-                <p>
-                  ${esc(text)}
-                </p>
+                const x =
+                  e.lesson ||
+                  {};
 
-              </div>
-            `;
+                let txt =
+                  'Evidence recorded.';
 
-          }
-        )
-        .join('')
-      ||
-      `
-        <div class="micro-note">
-          Waiting for reviewed evidence…
-        </div>
-      `;
+                if(
+                  e.event_type ===
+                  'historical_practice_session'
+                ){
+
+                  txt =
+                    `Replayed ${n(x.candles)} candles, tested ${n(x.setupsTested)} setups, average ${n(x.avgR).toFixed(2)}R.`;
+
+                }
+
+                if(
+                  e.event_type ===
+                  'paper_trade_review'
+                ){
+
+                  txt =
+                    `${x.outcome || 'trade'} • ${n(x.rMultiple).toFixed(2)}R • ${money(x.netPnl)} • ${words(x.exitReason)}`;
+
+                }
+
+                if(
+                  e.event_type ===
+                  'counterfactual_review'
+                ){
+
+                  txt =
+                    `Skipped setup later produced ${x.hypotheticalOutcome || '—'} / ${n(x.hypotheticalR).toFixed(2)}R.`;
+
+                }
+
+                return `
+                  <div class="item">
+
+                    <div class="itemTop">
+
+                      <span>
+                        ${esc(words(e.event_type).toUpperCase())}
+                      </span>
+
+                      <span>
+                        ${when(e.created_at)}
+                      </span>
+
+                    </div>
+
+                    <p>
+                      ${esc(txt)}
+                    </p>
+
+                  </div>
+                `;
+
+              }
+            )
+            .join('')
+        :
+          `
+            <div class="empty">
+              No learning events yet.
+            </div>
+          `;
+
+    const r =
+      (
+        d.recentRuns ||
+        []
+      ).slice(
+        0,
+        8
+      );
+
+    $('coreDecisions').innerHTML =
+      r.length
+        ?
+          r
+            .map(
+              x => `
+                <div class="item">
+
+                  <div class="itemTop">
+
+                    <span>
+                      ${esc(words(x.action).toUpperCase())}
+                    </span>
+
+                    <span>
+                      ${when(x.finished_at || x.started_at)}
+                    </span>
+
+                  </div>
+
+                  <p>
+
+                    status
+                    ${esc(x.status)}
+                    •
+                    signals
+                    ${n(x.signals_detected)}
+                    •
+                    candles
+                    ${n(x.candles_seen)}
+
+                    ${
+                      x.details
+                        ?
+                          `
+                            •
+                            anomaly
+                            ${n(x.details.anomalyScore).toFixed(0)}/100
+                            •
+                            ${esc(words(x.details.regime))}
+                          `
+                        :
+                          ''
+                    }
+
+                  </p>
+
+                </div>
+              `
+            )
+            .join('')
+        :
+          `
+            <div class="empty">
+              No core decisions yet.
+            </div>
+          `;
 
   }
 
-  async function poll() {
+  async function poll(){
 
-    try {
+    try{
 
-      const response =
+      const r =
         await fetch(
           `${STATUS}?t=${Date.now()}`,
           {
@@ -2341,36 +2565,40 @@
           }
         );
 
-      if (!response.ok) {
+      if(
+        !r.ok
+      ){
 
-        throw new Error(
-          `HTTP ${response.status}`
+        throw Error(
+          'HTTP ' +
+          r.status
         );
 
       }
 
-      const data =
-        await response.json();
+      render(
+        await r.json()
+      );
 
-      render(data);
+    }catch(e){
 
-    } catch (error) {
-
-      statusPill(
-        'botStatus',
+      pill(
+        'corePill',
         false,
-        'BOT ONLINE',
+        'CORE ONLINE',
         'STATUS ERROR'
       );
 
-      if (
-        $('scannerCopy')
-      ) {
+      pill(
+        'microPill',
+        false,
+        '1S ONLINE',
+        'STATUS ERROR'
+      );
 
-        $('scannerCopy').textContent =
-          `Dashboard could not read the bot status: ${error.message}. The backend may still be running.`;
-
-      }
+      $('scanCopy').textContent =
+        'Dashboard status request failed: ' +
+        e.message;
 
     }
 
@@ -2380,10 +2608,11 @@
 
   setInterval(
     poll,
-    10000
+    2000
   );
 
 })();
+
 </script>
 
 </body>
